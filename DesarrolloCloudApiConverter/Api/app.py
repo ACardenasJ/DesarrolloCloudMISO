@@ -12,4 +12,7 @@ app_context.push()
 api = Api(app)
 
 
-api.add_resource(VistaAPIGateway, '/registrar')
+api.add_resource(VistaSingUp, '/api/auth/signup')
+api.add_resource(VistaLogIn, '/api/auth/login')
+api.add_resource(VistaTask, '/api/task')
+api.add_resource(VistaTask, '/api/task/<int:id_task>')
