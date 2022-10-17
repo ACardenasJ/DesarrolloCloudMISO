@@ -1,7 +1,7 @@
 from Api import create_app
 from markupsafe import escape
 from flask_restful import Api
-from Api.vistas.vistas import VistaAPIGateway
+from Api.vistas.vistas import VistaSingUp, VistaLogIn, VistaTask, VistaFiles 
 
 
 
@@ -14,5 +14,6 @@ api = Api(app)
 
 api.add_resource(VistaSingUp, '/api/auth/signup')
 api.add_resource(VistaLogIn, '/api/auth/login')
-api.add_resource(VistaTask, '/api/task')
+#api.add_resource(VistaTask, '/api/task')
 api.add_resource(VistaTask, '/api/task/<int:id_task>')
+api.add_resource(VistaFiles, '/api/files/<string:file_name>')
