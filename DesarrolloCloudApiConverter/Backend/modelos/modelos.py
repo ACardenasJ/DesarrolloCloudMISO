@@ -26,14 +26,25 @@ class Usuario(db.Model):
     contrasena = db.Column(db.String(50))
     rol = db.Column(db.Integer, default=True) # 0: admin, 1: apostador
     phone = db.Column(db.String(50))
-    no_cuenta = db.Column(db.String(20))
-    nombre_banco = db.Column(db.String(50))
-    saldo = db.Column(db.String(50), default='0.0')
-    medio_pago = db.Column(db.String(50))
+
+
+class DefinitionTask(db.Model):
+    __tablename__ = 'task'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50))
+    origen = db.Column(db.String(50))
+    destino = db.Column(db.String(50))
 
     
 class UsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Usuario
+        include_relationships = True
+        load_instance = True
+
+class DefinitionTaskSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = DefinitionTask
         include_relationships = True
         load_instance = True

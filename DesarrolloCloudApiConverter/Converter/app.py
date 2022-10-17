@@ -16,3 +16,13 @@ api.add_resource(VistaValidarPassword, '/validarPass')
 @app.route('/hola')
 def hola():
     return "<h1 style='color:blue'>this is home!!</h1>"
+
+@app.route('/hola')
+def hola():
+    return "<h1 style='color:blue'>this is home!!</h1>"
+
+
+@app.route('/prueba')
+def prueba():
+
+    return Prueba().get()

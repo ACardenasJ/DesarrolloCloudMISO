@@ -14,9 +14,9 @@ class VistaSingUp(Resource):
         try:
             url_back = 'http://localhost:5000/signin/user'
             dataBudy = {'usuario' : request.json['usuario'],
-                        'contrasena': request.json['contrasena'],
-                        'u_email': request.json["u_email"], 
-                        'phone' : request.json["phone"]}
+                        'password1': request.json['password1'],
+                        'password2': request.json['password2'],
+                        'email': request.json["email"]}
 
             register = requests.post(url_back, json=dataBudy)  
             return register.json(), 200
@@ -39,7 +39,7 @@ class VistaLogIn(Resource):
         try:
             url_back = 'http://localhost:5000/login'
             dataBudy = {'usuario' : request.json['usuario'],
-                        'contrasena': request.json['contrasena']}
+                        'password': request.json['password']}
 
             logIn = requests.post(url_back, json=dataBudy)  
             return logIn.json(), 200

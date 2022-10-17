@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from modelos.modelos import db
-from vistas import VistaLogIn, VistaSignInUser, Prueba
+from vistas import VistaLogIn, VistaSignInUser
 
 
 
@@ -22,19 +22,12 @@ cors = CORS(app)
 api = Api(app)
 
 
-@app.route('/hola')
-def hola():
-    return "<h1 style='color:blue'>this is home!!</h1>"
 
-
-@app.route('/prueba')
-def prueba():
-
-    return Prueba().get()
 
 api.add_resource(VistaSignInUser, '/api/auth/signup')
 api.add_resource(VistaLogIn, '/login')
-api.add_resource(VistaTask, '/api/task/<int:id_task>')
+#api.add_resource(VistaTask, '/api/task/<int:id_task>')
+#api.add_resource(VistaFiles, '/api/files/<string:file_name>')
 
 jwt = JWTManager(app)
 

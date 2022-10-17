@@ -24,3 +24,5 @@ gunicorn==20.1.0
 numpy==1.23.3
 pydub==0.25.1
 ffmpeg==1.4
+rq==1.1.0 
+requests==2.22.0
