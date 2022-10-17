@@ -12,7 +12,6 @@ usuario_schema = UsuarioSchema()
 
 
 class VistaSignInUser(Resource):
-    
     def post(self):
         nuevo_usuario = Usuario(usuario=request.json["usuario"], 
                                 email=request.json["u_email"], 
@@ -29,7 +28,6 @@ class VistaSignInUser(Resource):
         return {"mensaje": "usuario apostador creado exitosamente", "token": token_de_acceso, "id": nuevo_usuario.id, "rol": nuevo_usuario.rol}
 
 class VistaLogIn(Resource):
-
     def post(self):
         usuario = Usuario.query.filter(Usuario.usuario == request.json["usuario"],
                                         Usuario.contrasena == request.json["contrasena"]).first()
@@ -60,3 +58,86 @@ class VistaLogIn(Resource):
         db.session.commit()
         return '', 204
 
+class Prueba():
+    def get(self):
+        return 'prueba', 202
+
+class VistaTask(Resource):
+    def post(self):
+        try:
+            dataBudy = {'file_name' : request.json['fileName'],
+                        'new_format': request.json['newFormat']}
+            #TODO: faltan campos
+            task = requests.post(url_back, json=dataBudy) 
+            return task.json(), 200
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+    
+    def get(self, id_task):
+        try:
+            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            task = requests.post(url_back) 
+            return task.json(), 200
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+    
+    def put(self, id_task):
+        try:
+            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            dataBudy = {'new_format': request.json['newFormat']}
+            task = requests.post(url_back, json=dataBudy) 
+            return task.json(), 200
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+
+    def delete(self, id_task):
+        try:
+            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            task = requests.post(url_back) 
+            return task.json(), 200
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404

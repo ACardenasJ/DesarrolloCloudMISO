@@ -58,6 +58,25 @@ class VistaLogIn(Resource):
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
 class VistaTask(Resource):
+    def get(self):
+        try:
+            url_back = 'http://localhost:5000/task'
+            task = requests.post(url_back) 
+            return task.json(), 200
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+
     def post(self):
         try:
             url_back = 'http://localhost:5000/task'
