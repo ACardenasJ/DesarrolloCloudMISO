@@ -1,10 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-
-#SE PUSO ESTO PARA QUE QUITAR WARNING QUE SALIA CUANDO SE AGREGABA ALGO CON DECIMAL O NUMERIC, SOLO TOCA CAMBIAR EL TIPO DE DATO POR SqliteNumeric
 from decimal import Decimal as D 
 import sqlalchemy.types as types  
+
 class SqliteNumeric(types.TypeDecorator):     
     impl = types.String     
     def load_dialect_impl(self, dialect):         
@@ -24,19 +23,29 @@ class Usuario(db.Model):
     usuario = db.Column(db.String(50))
     email = db.Column(db.String(50))
     contrasena = db.Column(db.String(50))
-    rol = db.Column(db.Integer, default=True) # 0: admin, 1: apostador
+    rol = db.Column(db.Integer, default=True)
     phone = db.Column(db.String(50))
 
-
 class DefinitionTask(db.Model):
-    __tablename__ = 'task'
+    __tablename__ = 'definitionTask'
 
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50))
     origen = db.Column(db.String(50))
     destino = db.Column(db.String(50))
 
-    
+class Task(db.Model):
+    __tablename__ = 'task'
+
+    id = db.Column(db.Integer, primary_key=True)
+    taskId = db.Column(db.String(50))
+    time_stamp = db.Column(db.String(50))
+    file_name = db.Column(db.String(50))
+    path_file_name = db.Column(db.String(50))
+    new_format = db.Column(db.String(50))
+    path_new_format = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+
 class UsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Usuario
@@ -46,5 +55,11 @@ class UsuarioSchema(SQLAlchemyAutoSchema):
 class DefinitionTaskSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = DefinitionTask
+        include_relationships = True
+        load_instance = True
+
+class TaskSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Task
         include_relationships = True
         load_instance = True

@@ -1,17 +1,23 @@
 import email
 import re
-import datetime
+import time
+import uuid
+from datetime import datetime
+
+from flask import request
+from flask_jwt_extended import create_access_token, jwt_required
+from flask_restful import Resource
+from flask import send_file
+from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
+                             TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
-from flask import request
-from flask_jwt_extended import jwt_required, create_access_token
-from flask_restful import Resource
+
 from sqlalchemy.exc import IntegrityError
-from modelos.modelos import db, Usuario, UsuarioSchema, DefinitionTask, DefinitionTaskSchema
 
 usuario_schema = UsuarioSchema()
 definitionTask_schema = DefinitionTaskSchema()
-
+task_schema = TaskSchema()
 
 class VistaSignInUser(Resource):
     def post(self):
@@ -81,17 +87,36 @@ class VistaTask(Resource):
 
     def post(self):
         #@jwt_required()
+        # TODO: tengo que ver como desencolar en otro programa y ver como enviar archivos
         try:
             file_name = request.json['fileName']
             new_format = request.json['newFormat']
-            #TODO: faltan campos
-            task = requests.post(url_back, json=dataBudy) 
-            return task.json(), 200
-            q = Queue(connection=Redis())
-            q.enqueue('taskId', 990 + i, 
-                       'file_name', file_name,
-                       'new_format', new_format)
+            uuid= uuid.uuid4()
+            now = datetime.now()
+            timestamp = datetime.timestamp(now)
+            status = 'uploaded'
+            taskId = uuid
 
+            task = Task(taskId=taskId, 
+                        time_stamp = timestamp, 
+                        file_name = file_name,
+                        path_file_name = '',
+                        new_format = new_format,
+                        path_new_format = '',
+                        status = status)
+            db.session.add(task)
+            db.session.commit()
+
+            q = Queue(connection=Redis())
+            job = q.enqueue('taskId:', taskId, 
+                      'time_stamp:', timestamp,
+                      'file_name:', file_name,
+                      'new_format:', new_format,
+                      'status:', status)
+            time.sleep(2)
+            if(job is not None):
+                 return {'mensaje': 'Se encolo correctmente', 'status': 200}
+            return {'mensaje': 'No se encolo la tarea', 'status': 409}
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -107,10 +132,12 @@ class VistaTask(Resource):
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
     
     def get(self, id_task):
+        #@jwt_required()
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
-            task = requests.post(url_back) 
-            return task.json(), 200
+            task = Task.query.get_or_404(id_task)
+            if task is not None:
+                return task_schema.dump(eventosDeportivos, many=True)
+            return 'La tarea no se encontro' , 404 
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -126,11 +153,15 @@ class VistaTask(Resource):
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
     
     def put(self, id_task):
+         #@jwt_required()
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
-            dataBudy = {'new_format': request.json['newFormat']}
-            task = requests.post(url_back, json=dataBudy) 
-            return task.json(), 200
+            task = Task.query.get_or_404(id_task)
+            if task is not None:
+                new_format = request.json['newFormat']
+                task.new_format = new_format
+                db.session.commit()
+                return task_schema.dump(task)     
+            return 'La tarea a actualizar no se encontro' , 404
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -146,10 +177,12 @@ class VistaTask(Resource):
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
     def delete(self, id_task):
+         #@jwt_required()
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
-            task = requests.post(url_back) 
-            return task.json(), 200
+            task = Task.query.get_or_404(id_task)
+            db.session.delete(eventod)
+            db.session.commit()
+            return 'la tarea se elimino correctamente', 204
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -163,3 +196,37 @@ class VistaTask(Resource):
             return {'error': 'Servicio InfoTemp offline -- Request'}, 404
         except Exception as e:
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+
+class VistaFiles(Resource):
+    def get(self, file_name):
+        try:
+            extension = file_name.split(".")
+            task = Task.query.filter(Task.file_name == file_name).all()
+            if task.file_name == file_name:
+                return send_file(
+                    task.path_file_name,
+                    mimetype="audio/" +extension[1], 
+                    as_attachment=True, 
+                    attachment_filename=task.file_name)
+            elif (task.new_format == file_name) and (task.status == 'procesed'):
+                 return send_file(
+                    task.path_new_format,
+                    mimetype= 'audio/' + extension[1], 
+                    as_attachment=True, 
+                    attachment_filename=task.path_new_format)
+            else:
+                 return 'El archivo no existe o no ha sido procesado', 204  
+        except ConnectionError as e:
+            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+
