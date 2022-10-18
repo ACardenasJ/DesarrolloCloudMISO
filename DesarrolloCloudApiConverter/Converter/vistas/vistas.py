@@ -3,14 +3,34 @@ from flask import request
 from sqlalchemy.exc import IntegrityError
 import json
 from sqlalchemy import desc
+import smtplib, ssl
 
 import re
 
 
-class VistaValidarPassword(Resource):
+class VistaConvertir(Resource):
 
     def post(self):
-        password = request.json['contrasena']
-        validarPassword = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,15}", password)
-        status = "True" if validarPassword is not None else "False"
-        return {'status': status, 'response': 201}
+       pass
+
+class VistaEnviarCorreo(Resource):
+
+    def post(self):
+        port = 587  # For starttls
+        smtp_server = "smtp.gmail.com"
+        sender_email = "my@gmail.com"
+        receiver_email = "your@gmail.com"
+        password = input("Type your password and press enter:")
+        message = """\
+        Subject: Hi there
+
+        This message is sent from Python."""
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()  # Can be omitted
+            server.starttls(context=context)
+            server.ehlo()  # Can be omitted
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message)
+        
