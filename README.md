@@ -46,7 +46,7 @@ Correr dockerFile individual:
 Carpeta Raiz - correr docker-compose: 
 * docker-compose up --build
 
-## URLs de prueba
+## URLs de prueba de status
 Backend:
 * http://localhost:5000/api/status
 
