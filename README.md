@@ -43,4 +43,5 @@ Correr dockerFile individual:
 
 
 ## Docker Compose
-Carpeta Raiz - correr docker-compose: docker-compose up --build
+Carpeta Raiz - correr docker-compose: 
+* docker-compose up --build
