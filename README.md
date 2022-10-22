@@ -45,3 +45,11 @@ Correr dockerFile individual:
 ## Docker Compose
 Carpeta Raiz - correr docker-compose: 
 * docker-compose up --build
+
+## URLs de prueba
+Backend:
+* http://localhost:5000/api/status
+Api:
+* http://localhost:5001/api/status
+Converter:
+* http://localhost:5002/api/status
