@@ -61,7 +61,7 @@ class VistaTask(Resource):
     def get(self):
         try:
             url_back = 'http://localhost:5000/task'
-            task = requests.post(url_back) 
+            task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
@@ -102,7 +102,7 @@ class VistaTask(Resource):
     def get(self, id_task):
         try:
             url_back = 'http://localhost:5000/task/{}'.format(id_task)
-            task = requests.post(url_back) 
+            task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
@@ -122,7 +122,7 @@ class VistaTask(Resource):
         try:
             url_back = 'http://localhost:5000/task/{}'.format(id_task)
             dataBudy = {'new_format': request.json['newFormat']}
-            task = requests.post(url_back, json=dataBudy) 
+            task = requests.put(url_back, json=dataBudy) 
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
@@ -141,7 +141,7 @@ class VistaTask(Resource):
     def delete(self, id_task):
         try:
             url_back = 'http://localhost:5000/task/{}'.format(id_task)
-            task = requests.post(url_back) 
+            task = requests.delete(url_back) 
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
@@ -161,7 +161,7 @@ class VistaFiles(Resource):
     def get(self, file_name):
         try:
             url_back = 'http://localhost:5000/files/{}'.format(file_name)
-            task = requests.post(url_back) 
+            task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
