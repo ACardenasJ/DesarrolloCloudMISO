@@ -12,12 +12,16 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
                              TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
+celery_app = Celery('tasks', broker='redis://localhost:6379/0')
+
 
 from sqlalchemy.exc import IntegrityError
 
 usuario_schema = UsuarioSchema()
 definitionTask_schema = DefinitionTaskSchema()
 task_schema = TaskSchema()
+
+
 
 class VistaSignInUser(Resource):
     def post(self):
@@ -63,8 +67,13 @@ class VistaLogIn(Resource):
         db.session.commit()
         return '', 204
 
-
 class VistaTask(Resource):
+
+    @celery_app.task(name="escribir_cola")
+    def escribir_cola(data):
+        with open('programar_task.txt','a+') as file:
+                   file.write('{}\n'.format(data))
+
     def get(self):
         try:
            definitionTask = DefinitionTask.query.all()
@@ -91,11 +100,15 @@ class VistaTask(Resource):
         try:
             file_name = request.json['fileName']
             new_format = request.json['newFormat']
-            uuid= uuid.uuid4()
-            now = datetime.now()
-            timestamp = datetime.timestamp(now)
+            timestamp = datetime.timestamp(datetime.now())
             status = 'uploaded'
-            taskId = uuid
+            taskId = uuid.uuid4()
+
+            data = {'file_name' : file_name, 
+                    'new_format' : new_format, 
+                    'timestamp' : timestamp,
+                    'status' : status, 
+                    'taskId' : taskId }
 
             task = Task(taskId=taskId, 
                         time_stamp = timestamp, 
@@ -107,12 +120,15 @@ class VistaTask(Resource):
             db.session.add(task)
             db.session.commit()
 
+            escribir_cola.apply_async(args=data)
+
             q = Queue(connection=Redis())
             job = q.enqueue('taskId:', taskId, 
                       'time_stamp:', timestamp,
                       'file_name:', file_name,
                       'new_format:', new_format,
                       'status:', status)
+            
             time.sleep(2)
             if(job is not None):
                  return {'mensaje': 'Se encolo correctmente', 'status': 200}
@@ -230,3 +246,42 @@ class VistaFiles(Resource):
         except Exception as e:
             return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
+
+
+def registrar_temp(temp_json):
+    try:
+        if(temp_json['temperatura'] is not None and temp_json['tipo'] is not None and temp_json['now'] is not None):
+            try:
+                content = requests.get('http://localhost:5002/healthcheck')
+                if content.status_code == 404:
+                    print('SERVICIO Alertador 5002 OFFLINE------')
+                    #reintegrar_cola(temp_json)
+                    servicio_2(temp_json)
+                else:
+                    #print('recibido: ', content.json())
+                    print('SERVICIO Alertador 5002 ONLINE')
+                    requests.post('http://localhost:5002/temperatura', json=temp_json)
+                    with open('log_registrar_temp.txt','a+') as file:
+                        file.write('{}\n'.format(temp_json))
+            except ConnectionError as e:
+                print('SERVICIO Alertador 5002 OFFLINE')
+                servicio_2(temp_json)
+            except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+                print('SERVICIO Alertador 5002 OFFLINE --- TIMEOUT')
+                servicio_2(temp_json)
+            except requests.exceptions.TooManyRedirects:
+                # Tell the user their URL was bad and try a different one
+                print('SERVICIO Alertador 5002 OFFLINE --- REDIRECT')
+                servicio_2(temp_json)
+            except requests.exceptions.RequestException as e:
+                # catastrophic error. bail.
+                print('SERVICIO Alertador 5002 OFFLINE --- REQUEST')
+                servicio_2(temp_json)
+            except Exception as e:
+                print('error' + str(e))
+        else:
+            print('Error en los datos')
+    except Exception as e:
+                print('error' + str(e))        
+    

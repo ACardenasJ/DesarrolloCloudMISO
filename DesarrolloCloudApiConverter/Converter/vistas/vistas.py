@@ -5,17 +5,23 @@ import json
 from sqlalchemy import desc
 import smtplib, ssl
 
-import re
+from celery import Celery
+
+
+
+
+
 
 
 class VistaConvertir(Resource):
 
+  
+
+   
     def post(self):
        pass
 
-class VistaEnviarCorreo(Resource):
-
-    def post(self):
+    def enviar_correo():
         port = 587  # For starttls
         smtp_server = "smtp.gmail.com"
         sender_email = "my@gmail.com"
@@ -33,4 +39,3 @@ class VistaEnviarCorreo(Resource):
             server.ehlo()  # Can be omitted
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, message)
-        
