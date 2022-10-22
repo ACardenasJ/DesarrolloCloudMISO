@@ -6,7 +6,9 @@ import smtplib, ssl
 
 
 
-
+class statusCheck(Resource):
+    def get(self):
+        return {'status': 'ok'}
 
 class VistaEnviarCorreo(Resource):
 

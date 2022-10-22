@@ -6,7 +6,9 @@ from datetime import datetime
 import requests
 import json
 
-
+class statusCheck(Resource):
+    def get(self):
+        return {'status': 'ok'}
 
 class VistaSingUp(Resource):
     def post(self):

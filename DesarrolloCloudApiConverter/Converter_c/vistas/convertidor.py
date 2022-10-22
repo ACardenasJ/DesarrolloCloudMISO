@@ -1,7 +1,7 @@
 # import required modules
 from os import path
 import subprocess
-from vistas import VistaEnviarCorreo as email
+from vistas.vistas import VistaEnviarCorreo as email
 
 
 
@@ -51,9 +51,9 @@ class converter():
 
     #MP3 to OGG
     def mp3_ogg(self):
-       bashCommand = " ffmpeg -y -i kwest.mp3  -strict -2 -acodec vorbis -ac 2 -aq 50 ./sounds/KW.ogg"
-       process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-       output, error = process.communicate()
+        bashCommand = " ffmpeg -y -i kwest.mp3  -strict -2 -acodec vorbis -ac 2 -aq 50 ./sounds/KW.ogg"
+        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
 
 
 

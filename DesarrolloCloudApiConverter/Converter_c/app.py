@@ -1,23 +1,32 @@
 from lib2to3.pytree import convert
-from Converter import create_app
+#from Converter import create_app
 from markupsafe import escape
 from flask_restful import Api
-from vistas.convertidor import converter as convertidor
+from vistas.convertidor import converter as convertidor_
+from vistas import statusCheck
+
+
+from flask import Flask
+def create_app(config_name):
+    app = Flask(__name__)
+    return app
 
 app = create_app('default')
 app_context = app.app_context()
 app_context.push()
 api = Api(app)
 
-file_path_redis = "./Backend/vistas/programar_task.txt"
+api.add_resource(statusCheck, '/api/status')
+
+file_path_redis = "./vistas/programar_task.txt"
 
 class Converter():
 
     def convertir(self):
-        convertidor = convertidor()
+        convertidor = convertidor_()
         with open(file_path_redis) as archivo:
             lines_of_tasks = archivo.readlines()
-            print(ine_of_task)
+            print(lines_of_tasks)
 
             for line in lines_of_tasks:
                 palabra = line.split(',')
@@ -49,3 +58,8 @@ class Converter():
 
 converter = Converter()
 converter.convertir()
+
+print(' * CONVERTER corriendo ----------------')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5002,debug=True)

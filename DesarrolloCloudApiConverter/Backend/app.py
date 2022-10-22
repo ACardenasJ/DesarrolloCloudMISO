@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from modelos.modelos import db
-from vistas import VistaLogIn, VistaSignInUser, VistaFiles, VistaTask
+from vistas import VistaLogIn, VistaSignInUser, VistaFiles, VistaTask, statusCheck
 
 
 
@@ -23,7 +23,7 @@ api = Api(app)
 
 
 
-
+api.add_resource(statusCheck, '/api/status')
 api.add_resource(VistaSignInUser, '/api/auth/signup')
 api.add_resource(VistaLogIn, '/login')
 api.add_resource(VistaTask, '/api/task/<int:id_task>')
@@ -31,3 +31,8 @@ api.add_resource(VistaFiles, '/api/files/<string:file_name>')
 
 jwt = JWTManager(app)
 
+
+print(' * BACKEND corriendo ----------------')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000,debug=True)

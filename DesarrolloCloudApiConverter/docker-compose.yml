@@ -1,0 +1,18 @@
+version: '3'
+services:
+    api:
+        build: ./Api_c
+        ports:
+            - "5001:5001"
+        depends_on:
+            - backend
+    backend:
+        build: ./Backend
+        ports:
+            - "5000:5000"
+        depends_on:
+            - converter
+    converter:
+        build: ./Converter_c
+        ports:
+            - "5002:5002"

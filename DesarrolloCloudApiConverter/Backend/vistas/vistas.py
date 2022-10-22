@@ -3,6 +3,7 @@ import re
 import time
 import uuid
 from datetime import datetime
+from celery import Celery
 
 from flask import request
 from flask_jwt_extended import create_access_token, jwt_required
@@ -21,7 +22,9 @@ usuario_schema = UsuarioSchema()
 definitionTask_schema = DefinitionTaskSchema()
 task_schema = TaskSchema()
 
-
+class statusCheck(Resource):
+    def get(self):
+        return {'status': 'ok'}
 
 class VistaSignInUser(Resource):
     def post(self):
