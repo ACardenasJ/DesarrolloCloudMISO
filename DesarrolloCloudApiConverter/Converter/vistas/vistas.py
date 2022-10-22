@@ -1,36 +1,25 @@
 from flask_restful import Resource
 from flask import request
 from sqlalchemy.exc import IntegrityError
-import json
 from sqlalchemy import desc
 import smtplib, ssl
 
-from celery import Celery
 
 
 
 
+class VistaEnviarCorreo(Resource):
 
-
-
-class VistaConvertir(Resource):
-
-  
-
-   
-    def post(self):
-       pass
-
-    def enviar_correo():
+    def enviar_correo(self, sender_email):
         port = 587  # For starttls
         smtp_server = "smtp.gmail.com"
-        sender_email = "my@gmail.com"
-        receiver_email = "your@gmail.com"
-        password = input("Type your password and press enter:")
+        sender_email = "acj8991@gmail.com"
+        receiver_email = sender_email
+        password = "1213456"
         message = """\
         Subject: Hi there
 
-        This message is sent from Python."""
+        Su archivo fue realizado exitosamante."""
 
         context = ssl.create_default_context()
         with smtplib.SMTP(smtp_server, port) as server:

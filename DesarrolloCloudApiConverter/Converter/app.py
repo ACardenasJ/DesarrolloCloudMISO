@@ -25,11 +25,10 @@ class Converter(self):
                 timestamp = palabra[2].split(":")[1]
                 #status = palabra[3].split(":")[1]
                 #taskId = palabra[4].split(":")[1]
-                origen_convert = file_name.split(":")
 
 
                 origen_convert = file_name.split(".")
-                destino_convert = file_name.split(".")
+                destino_convert = new_format.split(".")
                 if((origen_convert == "mp3") and (destino_convert == "wav")):
                     convertidor.mp3_wav()
                 elif((origen_convert == "mp3") and (destino_convert == "wma")):

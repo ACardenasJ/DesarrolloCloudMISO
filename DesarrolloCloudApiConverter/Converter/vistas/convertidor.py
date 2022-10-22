@@ -1,10 +1,12 @@
 # import required modules
 from os import path
 import subprocess
+from vistas import VistaEnviarCorreo as email
 
 
 
 class converter(self):
+    email = email()
     #MP3 to WAV
     def mp3_wav(self):
         bashCommand = "ffmpeg -i kwest.mp3 -acodec pcm_u8 -ar 22050 ./sounds/KW.wav"
