@@ -5,7 +5,7 @@ from vistas import VistaEnviarCorreo as email
 
 
 
-class converter(self):
+class converter():
     email = email()
     #MP3 to WAV
     def mp3_wav(self):

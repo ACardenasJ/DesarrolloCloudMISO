@@ -1,7 +1,8 @@
+from lib2to3.pytree import convert
 from Converter import create_app
 from markupsafe import escape
 from flask_restful import Api
-from convertidor import converter as convertidor
+from vistas.convertidor import converter as convertidor
 
 app = create_app('default')
 app_context = app.app_context()
@@ -10,7 +11,7 @@ api = Api(app)
 
 file_path_redis = "./Backend/vistas/programar_task.txt"
 
-class Converter(self):
+class Converter():
 
     def convertir(self):
         convertidor = convertidor()
@@ -45,3 +46,6 @@ class Converter(self):
                     convertidor.mp3_acc()
                 elif((origen_convert == "mp3") and (destino_convert == "ogg")):
                     convertidor.mp3_ogg()
+
+converter = Converter()
+converter.convertir()
