@@ -3,7 +3,7 @@ from flask import request
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token
 import requests
-import json
+from flask import send_file
 
 class statusCheck(Resource):
     def get(self):
@@ -14,7 +14,7 @@ class VistaSingUp(Resource):
         #@jwt_required()
         try:
             url_back = 'http://localhost:5000/api/auth/signup'
-            dataBudy = {'usuario' : request.json["username"],
+            dataBudy = {'username' : request.json["username"],
                         'password1': request.json['password1'],
                         'password2': request.json['password2'],
                         'email': request.json["email"]}
@@ -39,7 +39,7 @@ class VistaLogIn(Resource):
     def post(self):
         try:
             url_back = 'http://localhost:5000/api/auth/login'
-            dataBudy = {'usuario' : request.json['username'],
+            dataBudy = {'username' : request.json['username'],
                         'password': request.json['password']}
 
             logIn = requests.post(url_back, json=dataBudy)  
@@ -82,8 +82,8 @@ class VistaTask(Resource):
     def post(self, id_task):
         try:
             url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
-            dataBudy = {'file_name' : request.json['fileName'],
-                        'new_format': request.json['newFormat']}
+            dataBudy = {'fileName' : request.json['fileName'],
+                        'newFormat': request.json['newFormat']}
                         #'id_user' : request.json['idUser']}
             #TODO: faltan campos
             task = requests.post(url_back, json=dataBudy) 
@@ -124,7 +124,7 @@ class VistaTask(Resource):
     def put(self, id_task):
         try:
             url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
-            dataBudy = {'new_format': request.json['newFormat']}
+            dataBudy = {'newFormat': request.json['newFormat']}
             task = requests.put(url_back, json=dataBudy) 
             return task.json(), 200
         except ConnectionError as e:
@@ -165,7 +165,8 @@ class VistaFiles(Resource):
         try:
             url_back = 'http://localhost:5000/api/files/{}'.format(file_name)
             task = requests.get(url_back) 
-            return task.json(), 200
+            print (task['path_file_name'])
+            return send_file(task['path_file_name'], attachment_filename = task['file_name'])
         except ConnectionError as e:
             return {'error': 'Api_c getFiles offline -- Connection'}, 404
         except requests.exceptions.Timeout:

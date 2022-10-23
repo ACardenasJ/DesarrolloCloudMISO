@@ -11,7 +11,7 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
                              TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
-import json
+
 celery_app = Celery('tasks', broker='redis://localhost:6379/0')
 
 
@@ -162,7 +162,6 @@ class VistaTask(Resource):
         #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
-            print('task', task)
             if task is not None:
                 return task_schema.dump(task, many=False)
             return 'La tarea no se encontro' , 404 
@@ -231,13 +230,15 @@ class VistaFiles(Resource):
     def get(self, file_name):
         try:
             print('file_name', file_name)
-            extension = file_name.split(".")
             task = Task.query.filter(Task.file_name == file_name,
                                      Task.status ==  "Procesed").first()
+
+            """  return send_file(
+                    task.path_file_name,
+                    attachment_filename=task.file_name,
+                    as_attachment=True) """
             if task is not None:
-                return send_file(
-                    './'+ task.path_file_name,
-                    attachment_filename=task.file_name)
+                return {'path_file_name': task.path_file_name, 'file_name': task.file_name}
             else:
                  return 'El archivo no existe o no ha sido procesado', 404  
         except ConnectionError as e:
