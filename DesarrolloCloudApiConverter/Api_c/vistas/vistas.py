@@ -13,8 +13,8 @@ class VistaSingUp(Resource):
     def post(self):
         #@jwt_required()
         try:
-            url_back = 'http://localhost:5000/signin/user'
-            dataBudy = {'usuario' : request.json['usuario'],
+            url_back = 'http://localhost:5000/api/auth/signup'
+            dataBudy = {'usuario' : request.json["username"],
                         'password1': request.json['password1'],
                         'password2': request.json['password2'],
                         'email': request.json["email"]}
@@ -38,8 +38,8 @@ class VistaSingUp(Resource):
 class VistaLogIn(Resource):
     def post(self):
         try:
-            url_back = 'http://localhost:5000/login'
-            dataBudy = {'usuario' : request.json['usuario'],
+            url_back = 'http://localhost:5000/api/auth/login'
+            dataBudy = {'usuario' : request.json['username'],
                         'password': request.json['password']}
 
             logIn = requests.post(url_back, json=dataBudy)  
@@ -61,7 +61,7 @@ class VistaLogIn(Resource):
 class VistaTasks(Resource):
     def get(self):
         try:
-            url_back = 'http://localhost:5000/task'
+            url_back = 'http://localhost:5000/api/tasks'
             task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -81,9 +81,10 @@ class VistaTasks(Resource):
 class VistaTask(Resource):
     def post(self, id_task):
         try:
-            url_back = 'http://localhost:5000/task'
+            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
             dataBudy = {'file_name' : request.json['fileName'],
                         'new_format': request.json['newFormat']}
+                        #'id_user' : request.json['idUser']}
             #TODO: faltan campos
             task = requests.post(url_back, json=dataBudy) 
             return task.json(), 200
@@ -103,7 +104,7 @@ class VistaTask(Resource):
     
     def get(self, id_task):
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
             task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -122,7 +123,7 @@ class VistaTask(Resource):
     
     def put(self, id_task):
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
             dataBudy = {'new_format': request.json['newFormat']}
             task = requests.put(url_back, json=dataBudy) 
             return task.json(), 200
@@ -142,7 +143,7 @@ class VistaTask(Resource):
 
     def delete(self, id_task):
         try:
-            url_back = 'http://localhost:5000/task/{}'.format(id_task)
+            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
             task = requests.delete(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -162,7 +163,7 @@ class VistaTask(Resource):
 class VistaFiles(Resource):
     def get(self, file_name):
         try:
-            url_back = 'http://localhost:5000/files/{}'.format(file_name)
+            url_back = 'http://localhost:5000/api/files/{}'.format(file_name)
             task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:

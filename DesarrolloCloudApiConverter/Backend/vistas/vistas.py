@@ -1,5 +1,5 @@
+from dataclasses import dataclass
 import time
-import uuid
 from datetime import datetime
 from celery import Celery
 import requests
@@ -11,6 +11,7 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
                              TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
+import json
 celery_app = Celery('tasks', broker='redis://localhost:6379/0')
 
 
@@ -20,34 +21,43 @@ usuario_schema = UsuarioSchema()
 definitionTask_schema = DefinitionTaskSchema()
 task_schema = TaskSchema()
 
+@celery_app.task(name="escribir_cola")
+def escribir_cola(self, data):
+        data = (data,)
+        with open('programar_task.txt','a+') as file:
+                   file.write('{}\n'.format(data))
+
 class statusCheck(Resource):
     def get(self):
         return {'status': 'ok'}
 
 class VistaSignInUser(Resource):
     def post(self):
-        if request.json["password1"] == request.json["password2"]:
-                nuevo_usuario = Usuario(usuario=request.json["usuario"], 
-                                        email=request.json["email"], 
-                                        contrasena=request.json["password1"],
-                                        phone = '',
-                                        rol=1)
-                db.session.add(nuevo_usuario)
-                db.session.commit()
-                token_de_acceso = create_access_token(identity=nuevo_usuario.id)
-                return {"mensaje": "usuario apostador creado exitosamente", "token": token_de_acceso, "id": nuevo_usuario.id, "rol": nuevo_usuario.rol}
+        print(request)
+        if (request.json["password1"] == request.json["password2"]):
+            usuario = request.json["username"]
+            nuevo_usuario = Usuario(usuario = usuario, 
+                                    email = request.json["email"], 
+                                    contrasena = request.json["password1"],
+                                    phone = '',
+                                    rol=1)
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            token_de_acceso = create_access_token(identity=nuevo_usuario.id)
+            return {"mensaje": "usuario apostador creado exitosamente", "token": token_de_acceso}
         return {"mensaje": "password no coinciden", 'status': 400}
 
 class VistaLogIn(Resource):
     def post(self):
-        usuario = Usuario.query.filter(Usuario.usuario == request.json["usuario"],
+        usuario = Usuario.query.filter(Usuario.usuario == request.json["username"],
                                         Usuario.contrasena == request.json["password"]).first()
         db.session.commit()
         if usuario is None:
             return "El usuario no existe", 404
         else:
             token_de_acceso = create_access_token(identity=usuario.id)
-            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "rol": usuario.rol}
+            return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso}
+    
     def put(self):
         usuario = Usuario.query.filter(Usuario.usuario == request.json["usuario"],
                                         Usuario.id == request.json["id"],
@@ -68,106 +78,107 @@ class VistaLogIn(Resource):
         db.session.commit()
         return '', 204
 
-class VistaTask(Resource):
-
-    @celery_app.task(name="escribir_cola")
-    def escribir_cola(data):
-        with open('programar_task.txt','a+') as file:
-                   file.write('{}\n'.format(data))
-
-    def get(self):
+class VistaTasks(Resource):
+     def get(self):
         try:
            definitionTask = DefinitionTask.query.all()
            if len(definitionTask) > 0 :
                 return definitionTask_schema.dump(definitionTask, many=True)
-           return {'mensaje': 'No hay tareas programdas', 'status': 404}
+           return {'mensaje': 'No hay actividades que se puedan ahcer Programadas', 'status': 403}
         except ConnectionError as e:
-            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+            return {'error': 'Backend getTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
             # Maybe set up for a retry, or continue in a retry loop
-            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+            return {'error': 'Backend getTask offline -- Timeout'}, 404
         except requests.exceptions.TooManyRedirects:
             # Tell the user their URL was bad and try a different one
-            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+            return {'error': 'Backend getTask offline -- ManyRedirects'}, 404
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
-            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+            return {'error': 'Backend getTask offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+            return {'error': 'Backend getTask - Error desconocido -' + str(e)}, 404
 
-    def post(self):
+class VistaTask(Resource):
+
+    def post(self, id_task):
         #@jwt_required()
         # TODO: tengo que ver como desencolar en otro programa y ver como enviar archivos
         try:
             file_name = request.json['fileName']
             new_format = request.json['newFormat']
+            #id_user = request.json['idUser']
+            print("file_name ", file_name)
             timestamp = datetime.timestamp(datetime.now())
-            status = 'uploaded'
-            taskId = uuid.uuid4()
+            status = 'upLoaded'
 
+            usuario = Usuario.query.get_or_404(id_task)
+            
             data = {'file_name' : file_name, 
                     'new_format' : new_format, 
                     'timestamp' : timestamp,
                     'status' : status, 
-                    'taskId' : taskId }
+                    'id_usuario': usuario.id,
+                    'email': usuario.email}
 
-            task = Task(taskId=taskId, 
-                        time_stamp = timestamp, 
-                        file_name = file_name,
-                        path_file_name = '',
+            str_data = 'file_name:' + file_name + ",".format('new_format:' + new_format + ',',
+                        'timestamp:' +  str(timestamp)  +',',
+                        'status:' + status   +',', 
+                        'id_usuario:' +  str(usuario.id)  +',', 
+                        'email:' + usuario.email)
+
+            task = Task(time_stamp = timestamp, 
+                        file_name = file_name.split('.')[1],
+                        path_file_name = file_name,
                         new_format = new_format,
-                        path_new_format = '',
-                        status = status)
+                        status = status,
+                        id_usuario = usuario.id)
             db.session.add(task)
             db.session.commit()
 
-            escribir_cola.apply_async(args=data)
+            #escribir_cola.apply_async(args = str_data)
 
             q = Queue(connection=Redis())
-            job = q.enqueue('taskId:', taskId, 
-                      'time_stamp:', timestamp,
-                      'file_name:', file_name,
-                      'new_format:', new_format,
-                      'status:', status)
-            
-            time.sleep(2)
+            job = q.enqueue(str_data)
+            time.sleep(1)
             if(job is not None):
                  return {'mensaje': 'Se encolo correctmente', 'status': 200}
             return {'mensaje': 'No se encolo la tarea', 'status': 409}
         except ConnectionError as e:
-            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+            return {'error': 'Backend postTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
             # Maybe set up for a retry, or continue in a retry loop
-            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+            return {'error': 'Backend postTask offline -- Timeout'}, 404
         except requests.exceptions.TooManyRedirects:
             # Tell the user their URL was bad and try a different one
-            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+            return {'error': 'Backend postTask offline -- ManyRedirects'}, 404
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
-            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+            return {'error': 'Backend postTask offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+            return {'error': 'Backend postTask - Error desconocido -' + str(e)}, 404 
     
     def get(self, id_task):
         #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
+            print('task', task)
             if task is not None:
-                return task_schema.dump(eventosDeportivos, many=True)
+                return task_schema.dump(task, many=False)
             return 'La tarea no se encontro' , 404 
         except ConnectionError as e:
-            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+            return {'error': 'Backend getTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
             # Maybe set up for a retry, or continue in a retry loop
-            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+            return {'error': 'Backend getTask offline -- Timeout'}, 404
         except requests.exceptions.TooManyRedirects:
             # Tell the user their URL was bad and try a different one
-            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+            return {'error': 'Backend getTask offline -- ManyRedirects'}, 404
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
-            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+            return {'error': 'Backend getTask offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+            return {'error': 'Backend getTask - Error desconocido -' + str(e)}, 404 
     
     def put(self, id_task):
          #@jwt_required()
@@ -180,59 +191,55 @@ class VistaTask(Resource):
                 return task_schema.dump(task)     
             return 'La tarea a actualizar no se encontro' , 404
         except ConnectionError as e:
-            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+            return {'error': 'Backend putTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
             # Maybe set up for a retry, or continue in a retry loop
-            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+            return {'error': 'Backend putTask offline -- Timeout'}, 404
         except requests.exceptions.TooManyRedirects:
             # Tell the user their URL was bad and try a different one
-            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+            return {'error': 'Backend putTask offline -- ManyRedirects'}, 404
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
-            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+            return {'error': 'Backend putTask offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+            return {'error': 'Backend putTask - Error desconocido -' + str(e)}, 404
 
     def delete(self, id_task):
          #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
-            db.session.delete(eventod)
-            db.session.commit()
-            return 'la tarea se elimino correctamente', 204
+            if task is not None :
+                db.session.delete(task)
+                db.session.commit()
+                return 'la tarea se elimino correctamente', 200
+            return 'la tarea a eliminar no se encontro', 404
         except ConnectionError as e:
-            return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
+            return {'error': 'Backend deleteTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
             # Maybe set up for a retry, or continue in a retry loop
-            return {'error': 'Servicio InfoTemp offline -- Timeout'}, 404
+            return {'error': 'Backend deleteTask offline -- Timeout'}, 404
         except requests.exceptions.TooManyRedirects:
             # Tell the user their URL was bad and try a different one
-            return {'error': 'Servicio InfoTemp offline -- ManyRedirects'}, 404
+            return {'error': 'Backend deleteTask offline -- ManyRedirects'}, 404
         except requests.exceptions.RequestException as e:
             # catastrophic error. bail.
-            return {'error': 'Servicio InfoTemp offline -- Request'}, 404
+            return {'error': 'Backend deleteTask offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
+            return {'error': 'Backend deleteTask - Error desconocido -' + str(e)}, 404 
 
 class VistaFiles(Resource):
     def get(self, file_name):
         try:
+            print('file_name', file_name)
             extension = file_name.split(".")
-            task = Task.query.filter(Task.file_name == file_name).all()
-            if task.file_name == file_name:
+            task = Task.query.filter(Task.file_name == file_name,
+                                     Task.status ==  "Procesed").first()
+            if task is not None:
                 return send_file(
-                    task.path_file_name,
-                    mimetype="audio/" +extension[1], 
-                    as_attachment=True, 
+                    './'+ task.path_file_name,
                     attachment_filename=task.file_name)
-            elif (task.new_format == file_name) and (task.status == 'procesed'):
-                 return send_file(
-                    task.path_new_format,
-                    mimetype= 'audio/' + extension[1], 
-                    as_attachment=True, 
-                    attachment_filename=task.path_new_format)
             else:
-                 return 'El archivo no existe o no ha sido procesado', 204  
+                 return 'El archivo no existe o no ha sido procesado', 404  
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -245,44 +252,4 @@ class VistaFiles(Resource):
             # catastrophic error. bail.
             return {'error': 'Servicio InfoTemp offline -- Request'}, 404
         except Exception as e:
-            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
-
-
-
-def registrar_temp(temp_json):
-    try:
-        if(temp_json['temperatura'] is not None and temp_json['tipo'] is not None and temp_json['now'] is not None):
-            try:
-                content = requests.get('http://localhost:5002/healthcheck')
-                if content.status_code == 404:
-                    print('SERVICIO Alertador 5002 OFFLINE------')
-                    #reintegrar_cola(temp_json)
-                    servicio_2(temp_json)
-                else:
-                    #print('recibido: ', content.json())
-                    print('SERVICIO Alertador 5002 ONLINE')
-                    requests.post('http://localhost:5002/temperatura', json=temp_json)
-                    with open('log_registrar_temp.txt','a+') as file:
-                        file.write('{}\n'.format(temp_json))
-            except ConnectionError as e:
-                print('SERVICIO Alertador 5002 OFFLINE')
-                servicio_2(temp_json)
-            except requests.exceptions.Timeout:
-            # Maybe set up for a retry, or continue in a retry loop
-                print('SERVICIO Alertador 5002 OFFLINE --- TIMEOUT')
-                servicio_2(temp_json)
-            except requests.exceptions.TooManyRedirects:
-                # Tell the user their URL was bad and try a different one
-                print('SERVICIO Alertador 5002 OFFLINE --- REDIRECT')
-                servicio_2(temp_json)
-            except requests.exceptions.RequestException as e:
-                # catastrophic error. bail.
-                print('SERVICIO Alertador 5002 OFFLINE --- REQUEST')
-                servicio_2(temp_json)
-            except Exception as e:
-                print('error' + str(e))
-        else:
-            print('Error en los datos')
-    except Exception as e:
-                print('error' + str(e))        
-    
+            return {'error': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404 

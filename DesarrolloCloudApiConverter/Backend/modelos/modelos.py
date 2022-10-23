@@ -25,6 +25,7 @@ class Usuario(db.Model):
     contrasena = db.Column(db.String(50))
     rol = db.Column(db.Integer, default=True)
     phone = db.Column(db.String(50))
+    
 
 class DefinitionTask(db.Model):
     __tablename__ = 'definitionTask'
@@ -38,13 +39,12 @@ class Task(db.Model):
     __tablename__ = 'task'
 
     id = db.Column(db.Integer, primary_key=True)
-    taskId = db.Column(db.String(50))
     time_stamp = db.Column(db.String(50))
     file_name = db.Column(db.String(50))
     path_file_name = db.Column(db.String(50))
     new_format = db.Column(db.String(50))
-    path_new_format = db.Column(db.String(50))
     status = db.Column(db.String(50))
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id'))
 
 class UsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
