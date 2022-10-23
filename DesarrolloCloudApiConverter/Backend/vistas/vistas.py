@@ -1,10 +1,8 @@
-import email
-import re
 import time
 import uuid
 from datetime import datetime
 from celery import Celery
-
+import requests
 from flask import request
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_restful import Resource
