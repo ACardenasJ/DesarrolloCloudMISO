@@ -11,8 +11,12 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
                              TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
+from pathlib import Path
 
-celery_app = Celery('tasks', broker='redis://localhost:6379/0')
+UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
+PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
+
+celery_app = Celery('tasks', broker='redis://redis:6379/0')
 
 
 from sqlalchemy.exc import IntegrityError
@@ -22,13 +26,26 @@ definitionTask_schema = DefinitionTaskSchema()
 task_schema = TaskSchema()
 
 @celery_app.task(name="escribir_cola")
-def escribir_cola(self, data):
-        data = (data,)
-        with open('programar_task.txt','a+') as file:
-                   file.write('{}\n'.format(data))
+def escribir_cola(data):
+    pass
+        # data = (data,)
+        # with open('programar_task.txt','a+') as file:
+        #            file.write('{}\n'.format(data))
 
 class statusCheck(Resource):
     def get(self):
+        #str_data = {'status': 'ok'}
+        #args = (str_data,)
+        #escribir_cola.apply_async(args = args)
+
+        # Crear un archivo de texto en un volumen compartido
+        # dir_path = Path('/usr/src/app/')
+        # file_name = 'test.txt'
+        # if dir_path.exists():
+        #     with open(dir_path.joinpath(file_name), 'w') as file:
+        #         file.write('hola mundo')
+        #     print('File created')
+
         return {'status': 'ok'}
 
 class VistaSignInUser(Resource):
@@ -119,6 +136,7 @@ class VistaTask(Resource):
                     'timestamp' : timestamp,
                     'status' : status, 
                     'id_usuario': usuario.id,
+                    'taskId':id_task,
                     'email': usuario.email}
 
             str_data = 'file_name:' + file_name + ",".format('new_format:' + new_format + ',',
@@ -136,14 +154,16 @@ class VistaTask(Resource):
             db.session.add(task)
             db.session.commit()
 
-            #escribir_cola.apply_async(args = str_data)
+            args = (data,)
+            escribir_cola.apply_async(args = args)
 
-            q = Queue(connection=Redis())
-            job = q.enqueue(str_data)
-            time.sleep(1)
-            if(job is not None):
-                 return {'mensaje': 'Se encolo correctmente', 'status': 200}
-            return {'mensaje': 'No se encolo la tarea', 'status': 409}
+            # q = Queue(connection=Redis())
+            # job = q.enqueue(str_data)
+            # time.sleep(1)
+            # if(job is not None):
+            #      return {'mensaje': 'Se encolo correctmente', 'status': 200}
+            # return {'mensaje': 'No se encolo la tarea', 'status': 409}
+            return {'status': 'ok tarea encolada correctamente'}, 200
         except ConnectionError as e:
             return {'error': 'Backend postTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -229,18 +249,19 @@ class VistaTask(Resource):
 class VistaFiles(Resource):
     def get(self, file_name):
         try:
-            print('file_name', file_name)
-            task = Task.query.filter(Task.file_name == file_name,
-                                     Task.status ==  "Procesed").first()
+            # print('file_name', file_name)
+            # task = Task.query.filter(Task.file_name == file_name,
+            #                         Task.status ==  "Procesed").first()
 
-            """  return send_file(
-                    task.path_file_name,
-                    attachment_filename=task.file_name,
-                    as_attachment=True) """
-            if task is not None:
-                return {'path_file_name': task.path_file_name, 'file_name': task.file_name}
-            else:
-                 return 'El archivo no existe o no ha sido procesado', 404  
+            # """  return send_file(
+            #         task.path_file_name,
+            #         attachment_filename=task.file_name,
+            #         as_attachment=True) """
+            # if task is not None:
+            #     return {'path_file_name': PROCESS_DIRECTORY+task.path_file_name, 'file_name': task.file_name}
+            # else:
+            #     return 'El archivo no existe o no ha sido procesado', 404  
+            return {'path_file_name': PROCESS_DIRECTORY+"basto.wav", 'file_name': "basto.wav"}
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
         except requests.exceptions.Timeout:

@@ -16,10 +16,13 @@ pip3 install -r requirements.txt
 Probar
 api --> puerto 5001
 * flask run -p 5001
+
 back --> puerto 5000 
 * flask run -p 5000
+
 converter --> puerto 5002
 * flask run -p 5002
+
 
 ## Docker
 Carpeta Backend
@@ -55,3 +58,21 @@ Api:
 
 Converter:
 * http://localhost:5002/api/status
+
+
+## Docker commands
+
+listar dockers: docker ps
+
+revisar dentro de un docker: docker exec -it desarrollocloudapiconverter-api-1 sh
+
+revisar volumenes: docker volume ls
+
+revisar detalle de volumen: docker volume inspect desarrollocloudapiconverter_shared-volume
+
+volumen compartido entre dockers: cd /usr/src/app/upfiles
+
+
+## Convertir archivos
+ffmpeg -i /usr/src/app/upfiles/basto.mp3 /usr/src/app/pofiles/basto.wma
+ffmpeg -i basto.mp3 basto.wma

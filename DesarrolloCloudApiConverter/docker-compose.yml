@@ -4,15 +4,35 @@ services:
         build: ./Api_c
         ports:
             - "5001:5001"
+        volumes:
+            - shared-volume:/usr/src/app
         depends_on:
             - backend
     backend:
         build: ./Backend
         ports:
             - "5000:5000"
+        volumes:
+            - shared-volume:/usr/src/app
         depends_on:
             - converter
     converter:
         build: ./Converter_c
         ports:
             - "5002:5002"
+        volumes:
+            - shared-volume:/usr/src/app
+        depends_on:
+            - tareas
+    tareas:
+        build: ./Tareas
+        ports:
+            - "5003:5003"
+        volumes:
+            - shared-volume:/usr/src/app
+        depends_on:
+            - redis
+    redis:
+        image: redis
+volumes:
+    shared-volume:

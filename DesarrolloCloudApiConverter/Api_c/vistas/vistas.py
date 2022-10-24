@@ -4,6 +4,11 @@ from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, create_access_token
 import requests
 from flask import send_file
+#from werkzeug.utils import secure_filename
+import os
+import json
+
+UPLOAD_DIRECTORY = "/usr/src/app/upfiles"
 
 class statusCheck(Resource):
     def get(self):
@@ -13,7 +18,7 @@ class VistaSingUp(Resource):
     def post(self):
         #@jwt_required()
         try:
-            url_back = 'http://localhost:5000/api/auth/signup'
+            url_back = 'http://backend:5000/api/auth/signup'
             dataBudy = {'username' : request.json["username"],
                         'password1': request.json['password1'],
                         'password2': request.json['password2'],
@@ -38,7 +43,7 @@ class VistaSingUp(Resource):
 class VistaLogIn(Resource):
     def post(self):
         try:
-            url_back = 'http://localhost:5000/api/auth/login'
+            url_back = 'http://backend:5000/api/auth/login'
             dataBudy = {'username' : request.json['username'],
                         'password': request.json['password']}
 
@@ -61,7 +66,7 @@ class VistaLogIn(Resource):
 class VistaTasks(Resource):
     def get(self):
         try:
-            url_back = 'http://localhost:5000/api/tasks'
+            url_back = 'http://backend:5000/api/tasks'
             task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -81,13 +86,48 @@ class VistaTasks(Resource):
 class VistaTask(Resource):
     def post(self, id_task):
         try:
-            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
-            dataBudy = {'fileName' : request.json['fileName'],
-                        'newFormat': request.json['newFormat']}
+            # url_back = 'http://backend:5000/api/task/{}'.format(id_task)
+            # dataBudy = {'fileName' : request.json['fileName'],
+            #             'newFormat': request.json['newFormat']}
+            #             #'id_user' : request.json['idUser']}
+            # #TODO: faltan campos
+
+            # if 'file' not in request.files:
+            #     return {'error': 'No file part'}, 404
+            
+            # file = request.files['file']
+            # # If the user does not select a file, the browser submits an
+            # # empty file without a filename.
+            # if file.filename == '':
+            #     return {'error': 'No file selected'}, 404
+            # if file is None:
+            #     return {'error': 'No file selected'}, 404
+            
+            # #filename = secure_filename(file.filename)
+            # file.save(os.path.join(UPLOAD_DIRECTORY, dataBudy.filename))
+
+
+            # # task = requests.post(url_back, json=dataBudy) 
+            # # return task.json(), 200
+
+            print("POST TASK")
+            #print(request.form['request_'])
+            rqt = json.loads(request.form['request_'])
+            #print(rqt)
+            url_back = 'http://backend:5000/api/task/{}'.format(id_task)
+            dataBudy = {'fileName' : rqt['fileName'],
+                        'newFormat': rqt['newFormat']}
                         #'id_user' : request.json['idUser']}
-            #TODO: faltan campos
-            task = requests.post(url_back, json=dataBudy) 
+            file = request.files['file']
+            filename = file.filename
+            file.save(os.path.join(UPLOAD_DIRECTORY, filename))
+
+            print(filename)
+            print(dataBudy)
+            task = requests.post(url_back, json=dataBudy)
             return task.json(), 200
+
+            #return {'status': 'ok'}, 200
         except ConnectionError as e:
             return {'error': 'Apic_c task post offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -104,7 +144,7 @@ class VistaTask(Resource):
     
     def get(self, id_task):
         try:
-            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
+            url_back = 'http://backend:5000/api/task/{}'.format(id_task)
             task = requests.get(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -123,7 +163,7 @@ class VistaTask(Resource):
     
     def put(self, id_task):
         try:
-            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
+            url_back = 'http://backend:5000/api/task/{}'.format(id_task)
             dataBudy = {'newFormat': request.json['newFormat']}
             task = requests.put(url_back, json=dataBudy) 
             return task.json(), 200
@@ -143,7 +183,7 @@ class VistaTask(Resource):
 
     def delete(self, id_task):
         try:
-            url_back = 'http://localhost:5000/api/task/{}'.format(id_task)
+            url_back = 'http://backend:5000/api/task/{}'.format(id_task)
             task = requests.delete(url_back) 
             return task.json(), 200
         except ConnectionError as e:
@@ -162,11 +202,19 @@ class VistaTask(Resource):
 
 class VistaFiles(Resource):
     def get(self, file_name):
+        # url_back = 'http://backend:5000/api/files/{}'.format(file_name)
+        # task = requests.get(url_back).json() 
+        # print(task, flush=True)
+        # print("devolvio------------------", flush=True)
+        # print(task['path_file_name'],flush=True)
         try:
-            url_back = 'http://localhost:5000/api/files/{}'.format(file_name)
-            task = requests.get(url_back) 
-            print (task['path_file_name'])
-            return send_file(task['path_file_name'], attachment_filename = task['file_name'])
+            url_back = 'http://backend:5000/api/files/{}'.format(file_name)
+            task = requests.get(url_back).json()  
+            print (task['path_file_name'],flush=True)
+            if os.path.exists(task['path_file_name']):
+                return send_file(task['path_file_name'], attachment_filename = task['file_name'])
+            else:
+                return {'error': 'File not found'}, 404
         except ConnectionError as e:
             return {'error': 'Api_c getFiles offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -181,8 +229,3 @@ class VistaFiles(Resource):
         except Exception as e:
             return {'error': 'Api_c getFiles - Error desconocido -' + str(e)}, 404
 
-
-
-    
-   
-            

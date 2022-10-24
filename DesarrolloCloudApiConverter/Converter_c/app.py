@@ -3,12 +3,19 @@ from lib2to3.pytree import convert
 from markupsafe import escape
 from flask_restful import Api
 from vistas.convertidor import converter as convertidor_
-from vistas import statusCheck
-
-
+from vistas import statusCheck, doTask
 from flask import Flask
+from flask_cors import CORS
+import os
+
+PROCESS_DIRECTORY = "/usr/src/app/pofiles"
+
+if not os.path.exists(PROCESS_DIRECTORY):
+    os.makedirs(PROCESS_DIRECTORY)
+
 def create_app(config_name):
     app = Flask(__name__)
+    CORS(app)
     return app
 
 app = create_app('default')
@@ -17,6 +24,13 @@ app_context.push()
 api = Api(app)
 
 api.add_resource(statusCheck, '/api/status')
+api.add_resource(doTask, '/api/convertidor')
+
+
+# @app.route('/api/convertidor', methods=['GET', 'POST'])
+# def convertidor():
+#     print(' * API convertidor ----------------', flush=True)
+#     return 'OK'
 
 file_path_redis = "./vistas/programar_task.txt"
 
@@ -56,8 +70,8 @@ class Converter():
                 elif((origen_convert == "mp3") and (destino_convert == "ogg")):
                     convertidor.mp3_ogg()
 
-converter = Converter()
-converter.convertir()
+# converter = Converter()
+# converter.convertir()
 
 print(' * CONVERTER corriendo ----------------')
 

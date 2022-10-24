@@ -17,6 +17,9 @@ EXPOSE 5002
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+RUN apt-get -y update
+RUN apt-get install -y ffmpeg
+
 COPY . .
 
 # ENTRYPOINT [ "flask"]
