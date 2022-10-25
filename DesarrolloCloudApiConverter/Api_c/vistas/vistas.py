@@ -86,34 +86,8 @@ class VistaTasks(Resource):
 class VistaTask(Resource):
     def post(self, id_task):
         try:
-            # url_back = 'http://backend:5000/api/task/{}'.format(id_task)
-            # dataBudy = {'fileName' : request.json['fileName'],
-            #             'newFormat': request.json['newFormat']}
-            #             #'id_user' : request.json['idUser']}
-            # #TODO: faltan campos
-
-            # if 'file' not in request.files:
-            #     return {'error': 'No file part'}, 404
-            
-            # file = request.files['file']
-            # # If the user does not select a file, the browser submits an
-            # # empty file without a filename.
-            # if file.filename == '':
-            #     return {'error': 'No file selected'}, 404
-            # if file is None:
-            #     return {'error': 'No file selected'}, 404
-            
-            # #filename = secure_filename(file.filename)
-            # file.save(os.path.join(UPLOAD_DIRECTORY, dataBudy.filename))
-
-
-            # # task = requests.post(url_back, json=dataBudy) 
-            # # return task.json(), 200
-
-            print("POST TASK")
-            #print(request.form['request_'])
             rqt = json.loads(request.form['request_'])
-            #print(rqt)
+     
             url_back = 'http://backend:5000/api/task/{}'.format(id_task)
             dataBudy = {'fileName' : rqt['fileName'],
                         'newFormat': rqt['newFormat']}
@@ -202,19 +176,13 @@ class VistaTask(Resource):
 
 class VistaFiles(Resource):
     def get(self, file_name):
-        # url_back = 'http://backend:5000/api/files/{}'.format(file_name)
-        # task = requests.get(url_back).json() 
-        # print(task, flush=True)
-        # print("devolvio------------------", flush=True)
-        # print(task['path_file_name'],flush=True)
         try:
             url_back = 'http://backend:5000/api/files/{}'.format(file_name)
             task = requests.get(url_back).json()  
-            print (task['path_file_name'],flush=True)
             if os.path.exists(task['path_file_name']):
                 return send_file(task['path_file_name'], attachment_filename = task['file_name'])
             else:
-                return {'error': 'File not found'}, 404
+                return {'error': 'Archivo no encontrado'}, 404
         except ConnectionError as e:
             return {'error': 'Api_c getFiles offline -- Connection'}, 404
         except requests.exceptions.Timeout:

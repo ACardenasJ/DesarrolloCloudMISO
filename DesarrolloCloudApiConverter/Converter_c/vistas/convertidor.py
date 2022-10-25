@@ -14,16 +14,12 @@ class converter():
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 -acodec pcm_u8 -ar 22050 "+PROCESS_DIRECTORY+file_name+".wav"
         process = subprocess.Popen(bashCommand.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
-        print('SUBPROCESS ERROR: ' + str(error), flush=True)
-        print('SUBPROCESS stdout: ' + str(output.decode()), flush=True)  
 
     #MP3 to WMA
     def mp3_WMA(self,file_name):
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 "+PROCESS_DIRECTORY+file_name+".wma"
         process = subprocess.Popen(bashCommand.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
-        print('SUBPROCESS ERROR: ' + str(error), flush=True)
-        print('SUBPROCESS stdout: ' + str(output.decode()), flush=True)  
 
     #WAV to MP3
     def wav_mp3(self,file_name):
@@ -60,9 +56,3 @@ class converter():
         bashCommand = " ffmpeg -y -i "+UPLOAD_DIRECTORY+file_name+".mp3  -strict -2 -acodec vorbis -ac 2 -aq 50 "+PROCESS_DIRECTORY+file_name+".ogg"
         process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
-
-
-
-
-
-
