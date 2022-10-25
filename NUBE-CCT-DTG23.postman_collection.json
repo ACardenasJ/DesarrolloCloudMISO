@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "95dafaed-d84e-4480-8151-fa54c650dc34",
+		"name": "NUBE - CCT - DT",
+		"description": "Esta es una coleccion de Request para hacer peticiones al API de CCT del proyecto de Desarrollo de Software en la Nube.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5647548"
+	},
+	"item": [
+		{
+			"name": "Signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"juansesanchezl\",\r\n    \"password1\":\"12345\",\r\n    \"password2\":\"12345\",\r\n    \"email\":\"juans.sanchezlopez@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				},
+				"description": "Permite crear una cuenta de usuario, con los campos usuario, correo electrónico y contraseña. El usuario y el correo electrónico deben ser únicos en la plataforma, la contraseña debe seguir unos lineamientos mínimos de seguridad, además debe ser solicitada dos veces para que el usuario confirme que ingresa la contraseña  \ncorrectamente.\n\nRetorno: application/json, con un mensaje de confirmación si la cuenta pudo o no ser creada."
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"juansesanchezl\",\r\n    \"password\":\"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Permite recuperar el token de autorización para consumir los recursos del API  \nsuministrando un nombre de usuario y una contraseña correcta de una cuenta  \nregistrada.\n\nRetorno: application/json, con un token de autorización."
+			},
+			"response": []
+		},
+		{
+			"name": "Tasks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjY2MDA2OSwianRpIjoiYjhjOGE4OTItOWFiNi00MzgzLThjNzgtZDM3Y2M2Mzk2MjQ3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2NjYwMDY5LCJleHAiOjE2NjY2NjA5Njl9.JCwR1IZzZT2gTvtJEu_KJI7iqXmGJgidSIR-tJZVJNY",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/tasks?max=0&order=0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "max",
+							"value": "0",
+							"description": "Parámetro opcional que filtra la cantidad de resultados de una consulta"
+						},
+						{
+							"key": "order",
+							"value": "0",
+							"description": "Especifica si los resultados se ordenan de forma  ascendente (0) o de forma descendente (1) según el ID de la tarea."
+						}
+					]
+				},
+				"description": "Permite recuperar todas las tareas de conversión de un usuario autorizado en la  \naplicación.\n\nRetorno: application/json. Con un diccionario de todas las tareas de conversión de un usuario."
+			},
+			"response": []
+		},
+		{
+			"name": "Task_Creation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjU1NzAyNywianRpIjoiMDk3NDY1OTMtYjg4NC00OWE0LWIzYzEtZWYyM2E2NTU2MmY2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2NTU3MDI3LCJleHAiOjE2NjY1NTc5Mjd9.p1bGl4xpvLjbgo15z3go8H3YHhEx25t-mf96YaV0AiA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/jsan103/Downloads/basto3.wav"
+						},
+						{
+							"key": "request_",
+							"value": "{\n    \"fileName\":\"basto3.wav\",\n    \"newFormat\":\"basto3.mp3\"\n}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/task/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"task",
+						"4"
+					]
+				},
+				"description": "Permite crear una nueva tarea de conversión de formatos. El usuario requiere  \nautorización.\n\nRetorno: application/json. Mensaje de confirmación indicando que la tarea fue creada.\n\nParametros del Endpoint:\n\n- fileName (File). Ruta del archivo a subir a la aplicación.\n- newFormat (String). Formato al que desea cambiar el archivo cargado.\n    \n\nObservacion: Los campos id, timeStamp, y status se generan de forma automática en la aplicación. El  \nid es un campo único y auto-numérico. El timeStamp corresponde a la fecha y hora de  \ncarga del archivo. Finalmente, el status corresponde a la notificación en la aplicación si  \nel archivo ya fue o no procesado. Para los archivos cargados su estado por defecto es  \nuploaded, en el momento de realizar la conversión este campo pasa a processed."
+			},
+			"response": []
+		},
+		{
+			"name": "Task_Detailed",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer [TOKEN]",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/api/task/32",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"task",
+						"32"
+					]
+				},
+				"description": "Permite recuperar la informacion de una tarea en la aplicacion. El usuario requiere autorizacion.\n\nRetorno: application/json. Con un diccionario de la tarea especificada por un usuario\n\nParametros de consulta:\n\n- id_task (int). Id de la tarea a consultar"
+			},
+			"response": []
+		},
+		{
+			"name": "Task_Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer [TOKEN]",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"newFormat\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/tasks/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"tasks",
+						"0"
+					]
+				},
+				"description": "Permite actualizar la información de una tarea en la aplicación, le facilita al usuario  \nactualizar el formato de conversión de un archivo ya disponible en la aplicación. El  \nusuario requiere autorización.\n\nRetorno: application/json. Con un diccionario de la tarea actualizada por un usuario\n\nParametros de consulta\n\n- id_task (int). Id de la tarea a consultar\n    \n\nParametros del Endpoint\n\n- newFormat (String). Formato al que desea cambiar el archivo cargado\n    \n\nObservaciones:\n\nEl status debe cambiar a uploaded, en el momento de realizar la nueva conversión este  \ncampo pasa a processed. La versión anterior del archivo convertido deberá ser eliminada de la aplicación si este estaba processed."
+			},
+			"response": []
+		},
+		{
+			"name": "Task_Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer [TOKEN]",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/tasks/0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"tasks",
+						"0"
+					]
+				},
+				"description": "Permite eliminar una tarea en la aplicación. El usuario requiere autorización.\n\nRetorno: Ninguno\n\nParametros de consulta\n\n- id_task (int). Id de la tarea a consultar"
+			},
+			"response": []
+		},
+		{
+			"name": "Task_DownloadFile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer [TOKEN]",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5001/api/files/basto3.wav",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"files",
+						"basto3.wav"
+					]
+				},
+				"description": "Permite recuperar el archivo original o procesado\n\nRetorno: retorna el archivo\n\nParametros de consulta:\n\n- filename (string). Filename del archivo"
+			},
+			"response": []
+		},
+		{
+			"name": "Converter_MS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"file_name\":\"test.mp3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/convertidor",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"convertidor"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
