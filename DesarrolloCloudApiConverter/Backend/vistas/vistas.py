@@ -248,7 +248,7 @@ class VistaActualizar(Resource):
             usuario = Usuario.query.get_or_404(task.id_usuario)
             email = usuario.email
             print(usuario,flush=True)
-            self.enviar_correo(email, id_task)
+            #self.enviar_correo(email, id_task)
             return {"la tarea actualizacion de la tarea se realizo con exito"}, 200
         return {"la tarea no se encontro "}, 404
 

@@ -1,6 +1,11 @@
 # DesarrolloCloudMiso
 Aqui se desarrollara todo lo que es Desarrollo Cloud
 
+# INSTRUCCIONES PARA CORRER EL PROYECTO
+
+* Descargar Docker Desktop V4.13.0
+* En el terminal correr el siguiente comando en la carpeta raiz DesarrolloCloudApiConverter: docker-compose up --build 
+
 ## Instrucciones - Entorno Virtual Local
 
 Crear Entorno
@@ -42,7 +47,6 @@ Compilar dockerFile:
 * docker build ./Converter_c/. -t deploy_converter
 Correr dockerFile individual: 
 * docker run -p 5002:5002 -t -i deploy_converter:latest
-
 
 
 ## Docker Compose
