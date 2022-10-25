@@ -14,13 +14,15 @@ class converter():
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 -acodec pcm_u8 -ar 22050 "+PROCESS_DIRECTORY+file_name+".wav"
         process = subprocess.Popen(bashCommand.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
-
+        print(output,flush=True)
+        print(error,flush=True)
     #MP3 to WMA
     def mp3_WMA(self,file_name):
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 "+PROCESS_DIRECTORY+file_name+".wma"
         process = subprocess.Popen(bashCommand.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
-
+        print(output,flush=True)
+        print(error,flush=True)
     #WAV to MP3
     def wav_mp3(self,file_name):
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".wav -vn -ar 44100 -ac 2 -b:a 192k "+PROCESS_DIRECTORY+file_name+".mp3"

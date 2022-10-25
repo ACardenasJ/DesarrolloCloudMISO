@@ -12,6 +12,9 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
 from redis import Redis
 from rq import Queue
 from pathlib import Path
+import smtplib, ssl
+
+
 
 UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
 PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
@@ -212,10 +215,10 @@ class VistaTask(Resource):
 class VistaFiles(Resource):
     def get(self, file_name):
         try:
-             task = Task.query.filter(Task.file_name == file_name,
+             task = Task.query.filter(Task.path_file_name == file_name,
                                         Task.status ==  "Procesed").first()
              if task is not None:
-                 return {'path_file_name': PROCESS_DIRECTORY+ task.path_file_name, 'file_name': task.file_name}
+                 return {'path_file_name': PROCESS_DIRECTORY+ task.new_format, 'file_name': task.new_format}
              else:
                  return 'El archivo no existe o no ha sido procesado', 404  
             #return {'path_file_name': PROCESS_DIRECTORY +"basto.wav", 'file_name': "basto.wav"}
@@ -235,14 +238,17 @@ class VistaFiles(Resource):
 
 class VistaActualizar(Resource):
     def put(self, id_task):
-        #TODO: falta enviar correo electronico
+        print(id_task,flush=True)
         task = Task.query.get_or_404(id_task)
         if(task is not None):
             task.status = "Procesed"
-            usuario = Task.query.get_or_404(task.id_usuario)
-            email = usuario.email
-            self.enviar_correo(email, id_task)
             db.session.commit()
+            print('Task procesed',flush=True)
+            print(task.status,flush=True)
+            usuario = Usuario.query.get_or_404(task.id_usuario)
+            email = usuario.email
+            print(usuario,flush=True)
+            self.enviar_correo(email, id_task)
             return {"la tarea actualizacion de la tarea se realizo con exito"}, 200
         return {"la tarea no se encontro "}, 404
 

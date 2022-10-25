@@ -54,8 +54,8 @@ class doTask(Resource):
             else:
                 print("no se puede convertir archivo")
 
-            url_back = 'http://backend:5000/api/taskUpd/<{}'.format(taskId)
-            actualizar = requests.put(url_back).json()
+            url_back = 'http://backend:5000/api/taskUpd/{}'.format(taskId)
+            actualizar = requests.put(url_back)
             if(actualizar.status_code == 200):
                 return {'status': 'ok'}, 200
             else:

@@ -179,6 +179,8 @@ class VistaFiles(Resource):
         try:
             url_back = 'http://backend:5000/api/files/{}'.format(file_name)
             task = requests.get(url_back).json()  
+            print("RSLT ==>")
+            print(task)
             if os.path.exists(task['path_file_name']):
                 return send_file(task['path_file_name'], attachment_filename = task['file_name'])
             else:
