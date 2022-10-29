@@ -56,6 +56,7 @@ class doTask(Resource):
 
             url_back = 'http://backend:5000/api/taskUpd/{}'.format(taskId)
             actualizar = requests.put(url_back)
+            print(actualizar, flush=True)
             if(actualizar.status_code == 200):
                 return {'status': 'ok'}, 200
             else:
