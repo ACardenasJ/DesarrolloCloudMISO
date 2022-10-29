@@ -244,11 +244,8 @@ class VistaActualizar(Resource):
             if(task is not None):
                 task.status = "Procesed"
                 db.session.commit()
-                print('Task procesed',flush=True)
-                print(task.status,flush=True)
                 usuario = Usuario.query.get_or_404(task.id_usuario)
                 email = usuario.email
-                print(usuario,flush=True)
                 #self.enviar_correo(email, id_task)
                 return {'status': "la tarea actualizacion de la tarea se realizo con exito"}, 200
             else:
