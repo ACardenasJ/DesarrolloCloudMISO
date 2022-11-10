@@ -51,9 +51,7 @@ class doTask(Resource):
             elif((origen_convert == "mp3") and (destino_convert == "ogg")):
                 print("mp3 a ogg")
                 convertidor.mp3_ogg(file_name_)
-            else:
-                print("no se puede convertir archivo")
-
+    
             url_back = 'http://backend:5000/api/taskUpd/{}'.format(taskId)
             actualizar = requests.put(url_back)
             print(actualizar, flush=True)

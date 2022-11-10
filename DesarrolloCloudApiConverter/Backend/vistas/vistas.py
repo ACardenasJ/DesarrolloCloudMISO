@@ -1,23 +1,24 @@
 from dataclasses import dataclass
-import time
 from datetime import datetime
 from celery import Celery
 import requests
 from flask import request
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_restful import Resource
-from flask import send_file
 from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
                              TaskSchema, Usuario, UsuarioSchema, db)
-from redis import Redis
-from rq import Queue
-from pathlib import Path
-import smtplib, ssl
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 
 
 
 UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
 PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
+
+EMAIL_IDENTIFICATION = ""
+EMAIL_PASSWORD = ""
+
 
 celery_app = Celery('tasks', broker='redis://redis:6379/0')
 
@@ -253,20 +254,18 @@ class VistaActualizar(Resource):
         except Exception as e:
             return {'status': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
-    def enviar_correo(self, sender_email, id_task):
+    def enviar_correo(self, reciber_email, id_task):
         port = 587
-        smtp_server = "smtp.gmail.com"
-        sender_email = "nubedtg23@gmail.com"
-        receiver_email = sender_email
-        password = "DreamTeam123*"
-        message = """\
-        Subject: Task Procesed, 
-        "Su archivo está disponible para ser entregado.""" + " Su tarea con id: "+ id_task
-
-        context = ssl.create_default_context()
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()  
-            server.starttls(context=context)
-            server.ehlo()  
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message)
+        msg = MIMEMultipart()
+        message = "El archivo con la tarea identificada: " + id_task + " esta listo para ser obtenido, gracias por usar el servicio: "
+        password = EMAIL_PASSWORD
+        msg['From'] = EMAIL_IDENTIFICATION
+        msg['To'] = reciber_email
+        msg['Subject'] = "Archivo disponible idTask: " + id_task
+        msg.attach(MIMEText(message, 'plain'))
+        server = smtplib.SMTP('smtp.gmail.com:' +  port)
+        server.starttls()
+        server.login(msg['From'], password)
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        print ("successfully sent email to %s:" % (msg['To']))
+       
