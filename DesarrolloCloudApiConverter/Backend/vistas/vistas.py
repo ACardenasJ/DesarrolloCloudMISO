@@ -238,19 +238,23 @@ class VistaFiles(Resource):
 
 class VistaActualizar(Resource):
     def put(self, id_task):
-        print(id_task,flush=True)
-        task = Task.query.get_or_404(id_task)
-        if(task is not None):
-            task.status = "Procesed"
-            db.session.commit()
-            print('Task procesed',flush=True)
-            print(task.status,flush=True)
-            usuario = Usuario.query.get_or_404(task.id_usuario)
-            email = usuario.email
-            print(usuario,flush=True)
-            #self.enviar_correo(email, id_task)
-            return {"la tarea actualizacion de la tarea se realizo con exito"}, 200
-        return {"la tarea no se encontro "}, 404
+        try:
+            print(id_task,flush=True)
+            task = Task.query.get_or_404(id_task)
+            if(task is not None):
+                task.status = "Procesed"
+                db.session.commit()
+                print('Task procesed',flush=True)
+                print(task.status,flush=True)
+                usuario = Usuario.query.get_or_404(task.id_usuario)
+                email = usuario.email
+                print(usuario,flush=True)
+                #self.enviar_correo(email, id_task)
+                return {'status': "la tarea actualizacion de la tarea se realizo con exito"}, 200
+            else:
+                return {'status': "la tarea no se encontro "}, 404
+        except Exception as e:
+            return {'status': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
     def enviar_correo(self, sender_email, id_task):
         port = 587
