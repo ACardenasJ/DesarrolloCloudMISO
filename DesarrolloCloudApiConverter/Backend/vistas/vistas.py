@@ -7,19 +7,20 @@ from flask import request
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_restful import Resource
 from flask import send_file
-from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,
-                             TaskSchema, Usuario, UsuarioSchema, db)
+from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,TaskSchema, Usuario, UsuarioSchema, db)
 from redis import Redis
 from rq import Queue
 from pathlib import Path
 import smtplib, ssl
+from decouple import config
 
-
+REDIS_URI = config('REDIS_URL')  
+MAIL_URI = config('MAIL_URL')  
 
 UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
 PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
 
-celery_app = Celery('tasks', broker='redis://redis:6379/0')
+celery_app = Celery('tasks', broker='redis://{}/0'.format(REDIS_URI))
 
 
 from sqlalchemy.exc import IntegrityError
@@ -86,10 +87,10 @@ class VistaLogIn(Resource):
 class VistaTasks(Resource):
      def get(self):
         try:
-           definitionTask = DefinitionTask.query.all()
-           if len(definitionTask) > 0 :
+            definitionTask = DefinitionTask.query.all()
+            if len(definitionTask) > 0 :
                 return definitionTask_schema.dump(definitionTask, many=True)
-           return {'mensaje': 'No hay actividades que se puedan ahcer Programadas', 'status': 403}
+            return {'mensaje': 'No hay actividades que se puedan hacer Programadas', 'status': 403}
         except ConnectionError as e:
             return {'error': 'Backend getTask offline -- Connection'}, 404
         except requests.exceptions.Timeout:
@@ -128,6 +129,7 @@ class VistaTask(Resource):
                     'new_format' : new_format, 
                     'id_task': task.id}
             args = (data,)
+            print(args)
             escribir_cola.apply_async(args = args)
             return {'status': 'Tarea encolada correctamente', 'id_task': task.id }, 200
         except ConnectionError as e:
@@ -215,12 +217,12 @@ class VistaTask(Resource):
 class VistaFiles(Resource):
     def get(self, file_name):
         try:
-             task = Task.query.filter(Task.path_file_name == file_name,
+            task = Task.query.filter(Task.path_file_name == file_name,
                                         Task.status ==  "Procesed").first()
-             if task is not None:
-                 return {'path_file_name': PROCESS_DIRECTORY+ task.new_format, 'file_name': task.new_format}
-             else:
-                 return 'El archivo no existe o no ha sido procesado', 404  
+            if task is not None:
+                return {'path_file_name': PROCESS_DIRECTORY+ task.new_format, 'file_name': task.new_format}
+            else:
+                return 'El archivo no existe o no ha sido procesado', 404  
             #return {'path_file_name': PROCESS_DIRECTORY +"basto.wav", 'file_name': "basto.wav"}
         except ConnectionError as e:
             return {'error': 'Servicio InfoTemp offline -- Connection'}, 404
@@ -248,8 +250,11 @@ class VistaActualizar(Resource):
                 print(task.status,flush=True)
                 usuario = Usuario.query.get_or_404(task.id_usuario)
                 email = usuario.email
+                if (email == ""):
+                    return {'status':'El usuario no tiene un correo registrado'}, 404
+                
                 print(usuario,flush=True)
-                #self.enviar_correo(email, id_task)
+                self.enviar_correo(email, id_task)
                 return {'status': "la tarea actualizacion de la tarea se realizo con exito"}, 200
             else:
                 return {'status': "la tarea no se encontro "}, 404
@@ -257,19 +262,12 @@ class VistaActualizar(Resource):
             return {'status': 'Servicio InfoTemp - Error desconocido -' + str(e)}, 404
 
     def enviar_correo(self, sender_email, id_task):
-        port = 587
-        smtp_server = "smtp.gmail.com"
-        sender_email = "nubedtg23@gmail.com"
-        receiver_email = sender_email
-        password = "DreamTeam123*"
-        message = """\
-        Subject: Task Procesed, 
-        "Su archivo está disponible para ser entregado.""" + " Su tarea con id: "+ id_task
-
-        context = ssl.create_default_context()
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()  
-            server.starttls(context=context)
-            server.ehlo()  
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message)
+        url_mail = 'http://{}/api/mail'.format(MAIL_URI)
+        data_mail = {'mail' : sender_email,
+                    'id_task': str(id_task)}
+        print(url_mail)
+        send_m = requests.post(url_mail, json=data_mail) 
+        if(send_m.status_code == 200):
+            print('ok mail sent')
+        else:
+            print('error sending mail...')

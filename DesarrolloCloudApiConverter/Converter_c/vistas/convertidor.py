@@ -3,19 +3,21 @@ from os import path
 import subprocess
 #from vistas.vistas import VistaEnviarCorreo as email
 
-UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
-PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
+UPLOAD_DIRECTORY = "/upfiles/"
+PROCESS_DIRECTORY = "/pofiles/"
 
 class converter():
     #email = email()
     
     #MP3 to WAV
     def mp3_wav(self,file_name):
+        #descargar archivo localmente
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 -acodec pcm_u8 -ar 22050 "+PROCESS_DIRECTORY+file_name+".wav"
         process = subprocess.Popen(bashCommand.split(), shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
         print(output,flush=True)
         print(error,flush=True)
+        #guardar archivo en bucket
     #MP3 to WMA
     def mp3_WMA(self,file_name):
         bashCommand = "ffmpeg -i "+UPLOAD_DIRECTORY+file_name+".mp3 "+PROCESS_DIRECTORY+file_name+".wma"

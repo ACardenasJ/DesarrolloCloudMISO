@@ -28,6 +28,8 @@ back --> puerto 5000
 converter --> puerto 5002
 * flask run -p 5002
 
+mail_service --> puerto 5004
+* flask run -p 5004
 
 ## Docker
 Carpeta Backend
@@ -47,6 +49,12 @@ Compilar dockerFile:
 * docker build ./Converter_c/. -t deploy_converter
 Correr dockerFile individual: 
 * docker run -p 5002:5002 -t -i deploy_converter:latest
+
+Carpeta Converter
+Compilar dockerFile: 
+* docker build ./mail_service/. -t mail_service
+Correr dockerFile individual: 
+* docker run -p 5004:5004 -t -i mail_service:latest
 
 
 ## Docker Compose

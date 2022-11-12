@@ -1,8 +1,11 @@
 from celery import Celery
 import requests
 from time import sleep
+from decouple import config
+CONVERTER_URI = config('CONVERTER_URL')  
+REDIS_URI = config('REDIS_URL')  
 
-celery = Celery(__name__, broker='redis://redis:6379/0')
+celery = Celery(__name__, broker='redis://{}/0'.format(REDIS_URI))
 
 def reintegrar_cola(str_data):
     #AGREGA A LA COLA DE TAREAS
@@ -18,10 +21,10 @@ def escribir_cola(data):
     #     file.write('{}\n'.format(data))
 
     try:
-        rslt = requests.get('http://converter:5002/api/status')
+        rslt = requests.get('http://{}/api/status'.format(CONVERTER_URI))
         #print(rslt)
         if rslt.status_code == 200:
-            requests.post('http://converter:5002/api/convertidor', json=data)
+            requests.post('http://{}/api/convertidor'.format(CONVERTER_URI), json=data)
         else:
             reintegrar_cola(data)
     except requests.exceptions.ConnectionError as r:

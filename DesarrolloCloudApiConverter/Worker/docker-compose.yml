@@ -1,0 +1,14 @@
+version: '3'
+services:
+    tareas:
+        build: .
+        ports:
+            - "5003:5003"
+        environment:
+            - BACKEND_URL=host.docker.internal:5000
+            - API_URL=host.docker.internal:5001
+            - CONVERTER_URL=host.docker.internal:5002
+            - WORKER_URL=host.docker.internal:5003
+            - REDIS_URL=host.docker.internal:6379
+            - DATABASE_URL=postgresql://postgres:DreamTeam123*@35.238.228.196:5432/postgres
+            - MAIL_URL=host.docker.internal:5004

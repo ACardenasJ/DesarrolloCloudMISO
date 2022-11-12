@@ -4,6 +4,9 @@ from sqlalchemy import desc
 from vistas.convertidor import converter as convertidor_
 import smtplib, ssl
 import requests
+from decouple import config
+
+BACKEND_URL = config('BACKEND_URL')  
 
 UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
 PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
@@ -54,7 +57,7 @@ class doTask(Resource):
             else:
                 print("no se puede convertir archivo")
 
-            url_back = 'http://backend:5000/api/taskUpd/{}'.format(taskId)
+            url_back = 'http://{}/api/taskUpd/{}'.format(BACKEND_URL,taskId)
             actualizar = requests.put(url_back)
             if(actualizar.status_code == 200):
                 return {'status': 'ok'}, 200

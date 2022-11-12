@@ -27,3 +27,5 @@ ffmpeg==1.4
 rq==1.1.0 
 requests==2.22.0
 celery==5.0.5
+psycopg2==2.9.5
+python-decouple==3.6

@@ -7,14 +7,14 @@ from flask import Flask
 from flask_cors import CORS
 import os
 
-UPLOAD_DIRECTORY = "/usr/src/app/upfiles"
+# UPLOAD_DIRECTORY = "/usr/src/app/upfiles"
 
-if not os.path.exists(UPLOAD_DIRECTORY):
-    os.makedirs(UPLOAD_DIRECTORY)
+# if not os.path.exists(UPLOAD_DIRECTORY):
+#     os.makedirs(UPLOAD_DIRECTORY)
 
 def create_app(config_name):
     app = Flask(__name__)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_DIRECTORY
+    #app.config['UPLOAD_FOLDER'] = UPLOAD_DIRECTORY
     CORS(app)
     return app
 

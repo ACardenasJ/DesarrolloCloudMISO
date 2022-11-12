@@ -4,11 +4,11 @@ from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from modelos.modelos import db
 from vistas import VistaLogIn, VistaSignInUser, VistaFiles, VistaTask, statusCheck, VistaTasks, VistaActualizar
-
-
+from decouple import config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nube.db'
+DATABASE_URI = config('DATABASE_URL')  
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'frase-secreta'
 app.config['PROPAGATE_EXCEPTIONS'] = True

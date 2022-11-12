@@ -1,0 +1,19 @@
+npm install
+node index.js
+---------
+POST:
+
+http://localhost:3001/api/mail
+body - json:
+{
+    "mail": "yirzajes@gmail.com",
+    "id_task":"10"
+}
+
+
+--------
+
+
+docker build .t app .
+docker run -p 3001:3001 app
+docker stop cranky_pasteur

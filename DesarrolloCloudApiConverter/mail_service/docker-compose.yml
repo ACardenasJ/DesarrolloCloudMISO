@@ -1,0 +1,6 @@
+version: '3'
+services:
+    mail_service:
+        build: .
+        ports:
+            - "5004:5004"
