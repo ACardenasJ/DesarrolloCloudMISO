@@ -50,7 +50,7 @@ class VistaSignInUser(Resource):
             db.session.add(nuevo_usuario)
             db.session.commit()
             token_de_acceso = create_access_token(identity=nuevo_usuario.id)
-            return {"mensaje": "usuario apostador creado exitosamente", "token": token_de_acceso, 'usuarioId': nuevo_usuario.id}
+            return {"mensaje": "usuario creado exitosamente", "token": token_de_acceso, 'usuarioId': nuevo_usuario.id}
         return {"mensaje": "password no coinciden", 'status': 400}
 
 class VistaLogIn(Resource):
