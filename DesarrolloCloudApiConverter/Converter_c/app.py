@@ -9,6 +9,7 @@ from flask_cors import CORS
 import os
 
 PROCESS_DIRECTORY = "/usr/src/app/pofiles"
+file_path_redis = "./vistas/programar_task.txt"
 
 if not os.path.exists(PROCESS_DIRECTORY):
     os.makedirs(PROCESS_DIRECTORY)
@@ -27,13 +28,13 @@ api.add_resource(statusCheck, '/api/status')
 api.add_resource(doTask, '/api/convertidor')
 
 
+
+
+"""
 # @app.route('/api/convertidor', methods=['GET', 'POST'])
 # def convertidor():
 #     print(' * API convertidor ----------------', flush=True)
 #     return 'OK'
-
-file_path_redis = "./vistas/programar_task.txt"
-
 class Converter():
 
     def convertir(self):
@@ -72,6 +73,7 @@ class Converter():
 
 # converter = Converter()
 # converter.convertir()
+"""
 
 print(' * CONVERTER corriendo ----------------')
 
