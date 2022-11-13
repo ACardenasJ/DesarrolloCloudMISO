@@ -5,10 +5,10 @@ services:
         ports:
             - "5003:5003"
         environment:
-            - BACKEND_URL=host.docker.internal:5000
-            - API_URL=host.docker.internal:5001
-            - CONVERTER_URL=host.docker.internal:5002
-            - WORKER_URL=host.docker.internal:5003
-            - REDIS_URL=host.docker.internal:6379
+            - BACKEND_URL=35.193.32.58:5000
+            - API_URL=35.225.36.113:5001
+            - CONVERTER_URL=34.27.171.209:5002
+            - WORKER_URL=35.202.84.81:5003
+            - REDIS_URL=34.171.163.164:6379
             - DATABASE_URL=postgresql://postgres:DreamTeam123*@35.224.243.237:5432/postgres
-            - MAIL_URL=host.docker.internal:5004
+            - MAIL_URL=34.134.39.236:5004
