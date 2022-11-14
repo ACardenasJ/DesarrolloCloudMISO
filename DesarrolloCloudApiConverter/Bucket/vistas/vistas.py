@@ -14,17 +14,8 @@ with open('bucket_creds.json') as source:
     info = json.load(source)
 
 storage_credentials = service_account.Credentials.from_service_account_info(info)
-
-#app.config['GOOGLE_APPLICATION_CREDENTIALS'] = r'misonube2022equipo23-8093e2406c0a.json'
-
-
-#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config['GOOGLE_APPLICATION_CREDENTIALS']
 storage_client = storage.Client(project=project_id, credentials=storage_credentials)
-#storage_client = storage.Client()
 bucket_name = 'bucket_music_file_storage-1'
-
-#post('upfiles/prueba','Prueba/prueba.json')
-#get('upfiles/prueba', 'E:/Desarrollo/Practicas/Universidad/semestre2/Ciclo2/Nube/Desarrollo/DesarrolloCloudMISO/DesarrolloCloudApiConverter/downloaded/prueba.json')
 
 class statusCheck(Resource):
     def get(self):
