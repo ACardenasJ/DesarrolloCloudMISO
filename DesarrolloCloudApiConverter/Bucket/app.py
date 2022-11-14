@@ -1,19 +1,10 @@
-from lib2to3.pytree import convert
-from markupsafe import escape
 from flask_restful import Api
 from flask import Flask
 from flask_cors import CORS
-from vistas import statusCheck, ManageBucket
-from decouple import config
-from os import environ
-
+from vistas import statusCheck, ManageBucketUP, ManageBucketPO
 
 def create_app(config_name):
     app = Flask(__name__)
-    app.config['GOOGLE_APPLICATION_CREDENTIALS'] = './vistas/misonube2022equipo23-8093e2406c0a.json'
-
-    #app.config['GOOGLE_APPLICATION_CREDENTIALS'] = environ.get('GOOGLE_APPLICATION_CREDENTIALS')
-    #print(environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
     CORS(app)
     return app
 
@@ -24,10 +15,8 @@ app_context.push()
 api = Api(app)
 
 api.add_resource(statusCheck, '/api/status')
-api.add_resource(ManageBucket, '/api/Bucket/<string:file_name>')
-
-
-
+api.add_resource(ManageBucketUP, '/api/BucketUp/<string:file_name>')
+api.add_resource(ManageBucketPO, '/api/BucketPo/<string:file_name>')
 
 print(' * Up/Down Bucket corriendo ----------------')
 

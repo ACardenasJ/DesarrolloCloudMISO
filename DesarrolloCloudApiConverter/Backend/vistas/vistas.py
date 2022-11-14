@@ -12,10 +12,19 @@ from redis import Redis
 from rq import Queue
 from pathlib import Path
 import smtplib, ssl
-from decouple import config
+import json
+#from decouple import config
+from urllib.request import urlopen
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
 
-REDIS_URI = config('REDIS_URL')  
-MAIL_URI = config('MAIL_URL')  
+REDIS_URI = data['REDIS_URL']
+MAIL_URI = data['MAIL_URL']
+print(url,flush=True)
+print(REDIS_URI,flush=True)
+print(MAIL_URI,flush=True)
 
 UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
 PROCESS_DIRECTORY = "/usr/src/app/pofiles/"

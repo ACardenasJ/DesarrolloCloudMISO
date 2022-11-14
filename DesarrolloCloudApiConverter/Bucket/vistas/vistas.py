@@ -1,43 +1,81 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, send_file
 import os
 from pprint import pprint
 from google.cloud import storage
 from lib2to3.pytree import convert
-from markupsafe import escape
+from google.oauth2 import service_account
+import json
 
+project_id = "misonube2022equipo23"
+UPLOAD_DIRECTORY = "./vistas/upfiles/"
+PROCESS_DIRECTORY = "./vistas/pofiles/"
+with open('bucket_creds.json') as source:
+    info = json.load(source)
 
+storage_credentials = service_account.Credentials.from_service_account_info(info)
 
 #app.config['GOOGLE_APPLICATION_CREDENTIALS'] = r'misonube2022equipo23-8093e2406c0a.json'
 
 
 #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = config['GOOGLE_APPLICATION_CREDENTIALS']
-
-storage_client = storage.Client()
+storage_client = storage.Client(project=project_id, credentials=storage_credentials)
+#storage_client = storage.Client()
 bucket_name = 'bucket_music_file_storage-1'
-blob_name = 'upfiles/prueba'
-blog_name = 'upfiles/prueba'
 
 #post('upfiles/prueba','Prueba/prueba.json')
 #get('upfiles/prueba', 'E:/Desarrollo/Practicas/Universidad/semestre2/Ciclo2/Nube/Desarrollo/DesarrolloCloudMISO/DesarrolloCloudApiConverter/downloaded/prueba.json')
 
 class statusCheck(Resource):
     def get(self):
-        return {'status': 'ok'}
+        return {'status': 'ok'}, 200
 
-class ManageBucket:
-    def post(file_path):
-            # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
-            bucket = storage_client.get_bucket(bucket_name)
-            blob = bucket.blob(blob_name)
-            blob.upload_from_filename(file_path)
-            print('upload')
-            return blob
+class ManageBucketUP(Resource):
+    def post(self, file_name):
+        # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
+        #GUARDAR ARCHIVO LOCALMENTE
+        file = request.files['file']
+        file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
+        file.save(file_path)
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob("upfiles/"+file_name)
+        blob.upload_from_filename(file_path)
+        print('FILE UPLOADED')
+        return {'status': 'ok'}, 200
 
-    def get(file_path):
-            # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
-            bucket = storage_client.get_bucket(bucket_name)
-            blob = bucket.blob(blog_name)
-            with open(file_path, 'wb') as f:
-                storage_client.download_blob_to_file(blob, f)
-            print('download')
+    def get(self, file_name):
+        # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
+        bucket = storage_client.get_bucket(bucket_name)
+        file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
+        blob = bucket.blob("upfiles/"+file_name)
+        blob.download_to_filename(file_path)
+        print('FILE DOWNLOADED')
+        if os.path.exists(file_path):
+            return send_file(file_path, attachment_filename = file_name)
+        else:
+            return {'status': 'error'}, 404
+class ManageBucketPO(Resource):
+    def post(self, file_name):
+        # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
+        #GUARDAR ARCHIVO LOCALMENTE
+        file = request.files['file']
+        file_path = os.path.join(PROCESS_DIRECTORY, file_name)
+        file.save(file_path)
+        bucket = storage_client.get_bucket(bucket_name)
+        blob = bucket.blob("pofiles/"+file_name)
+        blob.upload_from_filename(file_path)
+        print('FILE UPLOADED')
+        return {'status': 'ok'}, 200
+
+    def get(self, file_name):
+        # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
+        bucket = storage_client.get_bucket(bucket_name)
+        file_path = os.path.join(PROCESS_DIRECTORY, file_name)
+        blob = bucket.blob("pofiles/"+file_name)
+        blob.download_to_filename(file_path)
+        print('FILE DOWNLOADED')
+        if os.path.exists(file_path):
+            return send_file(file_path, attachment_filename = file_name)
+        else:
+            return {'status': 'error'}, 404
+

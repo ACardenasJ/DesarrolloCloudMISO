@@ -1,9 +1,20 @@
 from celery import Celery
 import requests
 from time import sleep
-from decouple import config
-CONVERTER_URI = config('CONVERTER_URL')  
-REDIS_URI = config('REDIS_URL')  
+import json
+#from decouple import config
+from urllib.request import urlopen
+
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
+
+CONVERTER_URI = data['CONVERTER_URL']
+REDIS_URI = data['REDIS_URL']
+print(url,flush=True)
+print(CONVERTER_URI,flush=True)
+print(REDIS_URI,flush=True)
 
 celery = Celery(__name__, broker='redis://{}/0'.format(REDIS_URI))
 

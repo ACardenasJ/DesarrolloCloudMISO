@@ -4,10 +4,23 @@ from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from modelos.modelos import db
 from vistas import VistaLogIn, VistaSignInUser, VistaFiles, VistaTask, statusCheck, VistaTasks, VistaActualizar
-from decouple import config
+import json
+#from decouple import config
+from urllib.request import urlopen
+
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
+
 
 app = Flask(__name__)
-DATABASE_URI = config('DATABASE_URL')  
+DATABASE_URI = data['DATABASE_URL']
+print(url,flush=True)
+print(DATABASE_URI,flush=True)
+
+#DATABASE_URI = config('DATABASE_URL')  
+
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'frase-secreta'

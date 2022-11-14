@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"juansesanchezl\",\r\n    \"password1\":\"12345\",\r\n    \"password2\":\"12345\",\r\n    \"email\":\"juans.sanchezlopez@gmail.com\"\r\n}",
+					"raw": "{\r\n    \"username\":\"jsanchezl12\",\r\n    \"password1\":\"12345\",\r\n    \"password2\":\"12345\",\r\n    \"email\":\"js.sanchezl12@uniandes.edu.co\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -22,10 +22,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5001/api/auth/signup",
+					"raw": "http://{{url}}:5001/api/auth/signup",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5001",
 					"path": [
@@ -45,7 +45,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"juansesanchezl\",\r\n    \"password\":\"12345\"\r\n}",
+					"raw": "{\r\n    \"username\":\"jsanchezl12\",\r\n    \"password\":\"12345\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -53,10 +53,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5001/api/auth/login",
+					"raw": "http://{{url}}:5001/api/auth/login",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5001",
 					"path": [
@@ -76,15 +76,15 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjY2MDA2OSwianRpIjoiYjhjOGE4OTItOWFiNi00MzgzLThjNzgtZDM3Y2M2Mzk2MjQ3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2NjYwMDY5LCJleHAiOjE2NjY2NjA5Njl9.JCwR1IZzZT2gTvtJEu_KJI7iqXmGJgidSIR-tJZVJNY",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjgwMjUzOCwianRpIjoiNTcyZWYzZjYtOWRiMS00NGM4LTliOWItYWVlYmU2ZjYzY2YwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2ODAyNTM4LCJleHAiOjE2NjY4MDM0Mzh9.e-pqIrXSRcrnc6DVberoVRX886mm1V06UGXAN6zENH8",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5000/api/tasks?max=0&order=0",
+					"raw": "http://{{url}}:5000/api/tasks?max=0&order=0",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5000",
 					"path": [
@@ -125,26 +125,26 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/Users/jsan103/Downloads/basto3.wav"
+							"src": "/Users/jsan103/Downloads/basto1.mp3"
 						},
 						{
 							"key": "request_",
-							"value": "{\n    \"fileName\":\"basto3.wav\",\n    \"newFormat\":\"basto3.mp3\"\n}",
+							"value": "{\n    \"fileName\":\"basto1.mp3\",\n    \"newFormat\":\"basto1.wav\"\n}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:5001/api/task/4",
+					"raw": "http://{{url}}:5001/api/task/1",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5001",
 					"path": [
 						"api",
 						"task",
-						"4"
+						"1"
 					]
 				},
 				"description": "Permite crear una nueva tarea de conversión de formatos. El usuario requiere  \nautorización.\n\nRetorno: application/json. Mensaje de confirmación indicando que la tarea fue creada.\n\nParametros del Endpoint:\n\n- fileName (File). Ruta del archivo a subir a la aplicación.\n- newFormat (String). Formato al que desea cambiar el archivo cargado.\n    \n\nObservacion: Los campos id, timeStamp, y status se generan de forma automática en la aplicación. El  \nid es un campo único y auto-numérico. El timeStamp corresponde a la fecha y hora de  \ncarga del archivo. Finalmente, el status corresponde a la notificación en la aplicación si  \nel archivo ya fue o no procesado. Para los archivos cargados su estado por defecto es  \nuploaded, en el momento de realizar la conversión este campo pasa a processed."
@@ -158,21 +158,21 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer [TOKEN]",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjgwMTg5OCwianRpIjoiMzY1YmU0NmQtMTVhNi00NDlhLWIyNGEtMGMxNDM1YzhiZmUzIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2ODAxODk4LCJleHAiOjE2NjY4MDI3OTh9.7GtykMVGeYOmaKXwnPM6ZH-x02h9TVL87-Kq744ppsI",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5001/api/task/32",
+					"raw": "http://{{url}}:5001/api/task/6",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5001",
 					"path": [
 						"api",
 						"task",
-						"32"
+						"6"
 					]
 				},
 				"description": "Permite recuperar la informacion de una tarea en la aplicacion. El usuario requiere autorizacion.\n\nRetorno: application/json. Con un diccionario de la tarea especificada por un usuario\n\nParametros de consulta:\n\n- id_task (int). Id de la tarea a consultar"
@@ -200,10 +200,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/tasks/0",
+					"raw": "http://{{url}}:5000/api/tasks/0",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5000",
 					"path": [
@@ -228,10 +228,10 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5000/api/tasks/0",
+					"raw": "http://{{url}}:5000/api/tasks/0",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5000",
 					"path": [
@@ -256,16 +256,17 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5001/api/files/basto3.wav",
+					"raw": "http://{{url}}:5001/api/files/basto1.mp3/basto1.wav",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{url}}"
 					],
 					"port": "5001",
 					"path": [
 						"api",
 						"files",
-						"basto3.wav"
+						"basto1.mp3",
+						"basto1.wav"
 					]
 				},
 				"description": "Permite recuperar el archivo original o procesado\n\nRetorno: retorna el archivo\n\nParametros de consulta:\n\n- filename (string). Filename del archivo"
@@ -298,6 +299,107 @@
 						"convertidor"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create_Mail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mail\": \"juans.sanchezlopez@gmail.com\",\n    \"id_task\":\"10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5004/api/mail",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5004",
+					"path": [
+						"api",
+						"mail"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creation_File",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjU1NzAyNywianRpIjoiMDk3NDY1OTMtYjg4NC00OWE0LWIzYzEtZWYyM2E2NTU2MmY2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2NTU3MDI3LCJleHAiOjE2NjY1NTc5Mjd9.p1bGl4xpvLjbgo15z3go8H3YHhEx25t-mf96YaV0AiA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/jsan103/Downloads/basto1.mp3"
+						},
+						{
+							"key": "request_",
+							"value": "{\n    \"fileName\":\"basto1.mp3\",\n    \"newFormat\":\"basto1.wav\"\n}",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{url}}:5005/api/Bucket/basto1.mp3",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"port": "5005",
+					"path": [
+						"api",
+						"Bucket",
+						"basto1.mp3"
+					]
+				},
+				"description": "Permite crear una nueva tarea de conversión de formatos. El usuario requiere  \nautorización.\n\nRetorno: application/json. Mensaje de confirmación indicando que la tarea fue creada.\n\nParametros del Endpoint:\n\n- fileName (File). Ruta del archivo a subir a la aplicación.\n- newFormat (String). Formato al que desea cambiar el archivo cargado.\n    \n\nObservacion: Los campos id, timeStamp, y status se generan de forma automática en la aplicación. El  \nid es un campo único y auto-numérico. El timeStamp corresponde a la fecha y hora de  \ncarga del archivo. Finalmente, el status corresponde a la notificación en la aplicación si  \nel archivo ya fue o no procesado. Para los archivos cargados su estado por defecto es  \nuploaded, en el momento de realizar la conversión este campo pasa a processed."
+			},
+			"response": []
+		},
+		{
+			"name": "Read_File",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjU1NzAyNywianRpIjoiMDk3NDY1OTMtYjg4NC00OWE0LWIzYzEtZWYyM2E2NTU2MmY2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6NCwibmJmIjoxNjY2NTU3MDI3LCJleHAiOjE2NjY1NTc5Mjd9.p1bGl4xpvLjbgo15z3go8H3YHhEx25t-mf96YaV0AiA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{url}}:5005/api/Bucket/basto1.mp3",
+					"protocol": "http",
+					"host": [
+						"{{url}}"
+					],
+					"port": "5005",
+					"path": [
+						"api",
+						"Bucket",
+						"basto1.mp3"
+					]
+				},
+				"description": "Permite crear una nueva tarea de conversión de formatos. El usuario requiere  \nautorización.\n\nRetorno: application/json. Mensaje de confirmación indicando que la tarea fue creada.\n\nParametros del Endpoint:\n\n- fileName (File). Ruta del archivo a subir a la aplicación.\n- newFormat (String). Formato al que desea cambiar el archivo cargado.\n    \n\nObservacion: Los campos id, timeStamp, y status se generan de forma automática en la aplicación. El  \nid es un campo único y auto-numérico. El timeStamp corresponde a la fecha y hora de  \ncarga del archivo. Finalmente, el status corresponde a la notificación en la aplicación si  \nel archivo ya fue o no procesado. Para los archivos cargados su estado por defecto es  \nuploaded, en el momento de realizar la conversión este campo pasa a processed."
 			},
 			"response": []
 		}

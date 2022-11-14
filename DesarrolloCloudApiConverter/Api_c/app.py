@@ -29,7 +29,7 @@ api.add_resource(VistaSingUp, '/api/auth/signup')
 api.add_resource(VistaLogIn, '/api/auth/login')
 api.add_resource(VistaTasks, '/api/tasks')
 api.add_resource(VistaTask, '/api/task/<int:id_task>')
-api.add_resource(VistaFiles, '/api/files/<string:file_name>')
+api.add_resource(VistaFiles, '/api/files/<string:file_name>/<string:nfile_name>')
 
 print(' * API corriendo ----------------')
 

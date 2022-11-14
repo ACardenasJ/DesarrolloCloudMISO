@@ -7,10 +7,24 @@ from flask import send_file
 #from werkzeug.utils import secure_filename
 import os
 import json
-from decouple import config
 
-BACKEND_URL = config('BACKEND_URL')  
+#from decouple import config
+from urllib.request import urlopen
+#BACKEND_URL = config('BACKEND_URL')  
 #UPLOAD_DIRECTORY = "/usr/src/app/upfiles"
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
+BACKEND_URL = data['BACKEND_URL']
+BUCKET_URL = data['BUCKET_URL']
+print(url,flush=True)
+print(BACKEND_URL,flush=True)
+print(BUCKET_URL,flush=True)
+
+UPLOAD_DIRECTORY = "./vistas/upfiles/"
+PROCESS_DIRECTORY = "./vistas/pofiles/"
+
 
 class statusCheck(Resource):
     def get(self):
@@ -94,8 +108,14 @@ class VistaTask(Resource):
                         'newFormat': rqt['newFormat']}
                         #'id_user' : request.json['idUser']}
             file = request.files['file']
-            filename = file.filename
-            #file.save(os.path.join(UPLOAD_DIRECTORY, filename))
+            file_name = file.filename
+            filename = os.path.join(UPLOAD_DIRECTORY, file_name)
+            file.save(filename)
+
+            url_bucket = 'http://{}/api/BucketUp/{}'.format(BUCKET_URL,file_name)
+            file = {'file': open(filename, 'rb')}
+            bucket = requests.post(url_bucket, files=file)
+            print(bucket.json())
             #GUARDAR ARCHIVO
             print(filename)
             print(dataBudy)
@@ -176,17 +196,24 @@ class VistaTask(Resource):
             return {'error': 'Apic_c deleteTask - Error desconocido -' + str(e)}, 404
 
 class VistaFiles(Resource):
-    def get(self, file_name):
+    def get(self, file_name, nfile_name):
         try:
             url_back = 'http://{}/api/files/{}'.format(BACKEND_URL, file_name)
             task = requests.get(url_back).json()  
             print("RSLT ==>")
             print(task)
-            # DESCARGAR ARCHIVO
-            # if os.path.exists(task['path_file_name']):
-            #     return send_file(task['path_file_name'], attachment_filename = task['file_name'])
-            # else:
-            #     return {'error': 'Archivo no encontrado'}, 404
+            url_bucket = 'http://{}/api/BucketPo/{}'.format(BUCKET_URL,nfile_name)
+            file_path = os.path.join(PROCESS_DIRECTORY, nfile_name)
+            with requests.get(url_bucket, stream=True) as r:
+                r.raise_for_status()
+                with open(file_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192): 
+                        f.write(chunk)
+
+                    if os.path.exists(file_path):
+                        return send_file(file_path, attachment_filename = task['file_name'])
+                    else:
+                        return {'error': 'Archivo no encontrado'}, 404
         except ConnectionError as e:
             return {'error': 'Api_c getFiles offline -- Connection'}, 404
         except requests.exceptions.Timeout:

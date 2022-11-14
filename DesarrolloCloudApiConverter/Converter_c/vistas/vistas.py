@@ -4,12 +4,20 @@ from sqlalchemy import desc
 from vistas.convertidor import converter as convertidor_
 import smtplib, ssl
 import requests
-from decouple import config
+import json
+#from decouple import config
+from urllib.request import urlopen
 
-BACKEND_URL = config('BACKEND_URL')  
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
+BACKEND_URL = data['BACKEND_URL']
+print(url,flush=True)
+print(BACKEND_URL,flush=True)
 
-UPLOAD_DIRECTORY = "/usr/src/app/upfiles/"
-PROCESS_DIRECTORY = "/usr/src/app/pofiles/"
+UPLOAD_DIRECTORY = "/upfiles/"
+PROCESS_DIRECTORY = "/pofiles/"
 
 class statusCheck(Resource):
     def get(self):
