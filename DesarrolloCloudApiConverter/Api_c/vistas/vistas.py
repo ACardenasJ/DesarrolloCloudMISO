@@ -8,6 +8,12 @@ from flask import send_file
 import os
 import json
 
+
+from time import perf_counter
+
+import threading
+
+
 #from decouple import config
 from urllib.request import urlopen
 #BACKEND_URL = config('BACKEND_URL')  
@@ -18,12 +24,26 @@ response = urlopen(url)
 data = json.loads(response.read())
 BACKEND_URL = data['BACKEND_URL']
 BUCKET_URL = data['BUCKET_URL']
+
 print(url,flush=True)
 print(BACKEND_URL,flush=True)
 print(BUCKET_URL,flush=True)
 
 UPLOAD_DIRECTORY = "./vistas/upfiles/"
 PROCESS_DIRECTORY = "./vistas/pofiles/"
+
+
+def set_file_bkt(file, file_path, file_name, id_task):
+    url_bucket = 'http://{}/api/BucketUp/{}/{}'.format(BUCKET_URL,file_name,id_task)
+    print(url_bucket,flush=True)
+    print(file_path,flush=True)
+    print(str(id_task),flush=True)
+    file = {'file': open(file_path, 'rb')}
+    bucket = requests.post(url_bucket, files=file)
+    print(bucket.json(),flush=True)
+
+def fire_and_forget(file, file_path, file_name, id_task):
+    threading.Thread(target=set_file_bkt, args=(file, file_path, file_name, id_task)).start()
 
 
 class statusCheck(Resource):
@@ -109,22 +129,20 @@ class VistaTask(Resource):
                         #'id_user' : request.json['idUser']}
             file = request.files['file']
             file_name = file.filename
-            filename = os.path.join(UPLOAD_DIRECTORY, file_name)
-            file.save(filename)
+            file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
+            file.save(file_path)
 
             
+            
             #GUARDAR ARCHIVO
-            print(filename,flush=True)
+            print(file_path,flush=True)
             print(dataBudy,flush=True)
             task = requests.post(url_back, json=dataBudy)
             print(task.json(),flush=True)
+            taskid = task.json()['id_task']
+            #asyncio.run(set_file_bkt(file, file_path, file_name, taskid))
 
-            url_bucket = 'http://{}/api/BucketUp/{}/{}'.format(BUCKET_URL,file_name,task.json()['id_task'])
-            print(url_bucket,flush=True)
-            file = {'file': open(filename, 'rb')}
-            bucket = requests.post(url_bucket, files=file)
-            print(bucket.json(),flush=True)
-
+            fire_and_forget(file, file_path, file_name, taskid)
             return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Apic_c task post offline -- Connection'}, 404
@@ -139,6 +157,7 @@ class VistaTask(Resource):
             return {'error': 'Apic_c task post offline -- Request'}, 404
         except Exception as e:
             return {'error': 'Apic_c task post - Error desconocido -' + str(e)}, 404
+    
     
     def get(self, id_task):
         try:

@@ -1,7 +1,7 @@
 from flask_restful import Api
 from flask import Flask
 from flask_cors import CORS
-from vistas import statusCheck, ManageBucketUP, ManageBucketPO, MBucketPOST
+from vistas import statusCheck, ManageBucketUP, ManageBucketPO, MBucketPOST,ManageBucketPOST2_
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -16,6 +16,8 @@ api = Api(app)
 
 api.add_resource(statusCheck, '/api/status')
 api.add_resource(MBucketPOST, '/api/BucketUp/<string:file_name>/<int:id_task>')
+api.add_resource(ManageBucketPOST2_, '/api/BucketPo/<string:file_name>/<int:id_task>')
+
 api.add_resource(ManageBucketUP, '/api/BucketUp/<string:file_name>')
 api.add_resource(ManageBucketPO, '/api/BucketPo/<string:file_name>')
 

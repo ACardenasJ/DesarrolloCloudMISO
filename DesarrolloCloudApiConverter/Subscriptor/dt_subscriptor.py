@@ -44,7 +44,7 @@ def callback(msg: pubsub_v1.subscriber.message) -> None:
     # AGREGAR MENSAJE A COLA DE MENSAJES
     #print(args)
     escribir_cola.apply_async(args = args)
-    time.sleep(5)
+    time.sleep(2)
     print("Message processed",flush=True)
 
 streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)

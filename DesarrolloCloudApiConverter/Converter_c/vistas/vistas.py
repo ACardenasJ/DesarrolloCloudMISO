@@ -40,34 +40,36 @@ class doTask(Resource):
 
             if((origen_convert == "mp3") and (destino_convert == "wav")):
                 print("mp3 a wav", flush=True)
-                convertidor.mp3_wav(file_name_)
+                convertidor.mp3_wav(file_name_,taskId)
             elif((origen_convert == "mp3") and (destino_convert == "wma")):
                 print("mp3 a wma", flush=True)
-                convertidor.mp3_WMA(file_name_)
+                convertidor.mp3_WMA(file_name_,taskId)
             elif((origen_convert == "wav") and (destino_convert == "mp3")):
                 print("wav a mp3")
-                convertidor.wav_mp3(file_name_)
+                convertidor.wav_mp3(file_name_,taskId)
             elif((origen_convert == "wav") and (destino_convert == "wma")):
                 print("wav a wma")
-                convertidor.wav_wma(file_name_)
+                convertidor.wav_wma(file_name_,taskId)
             elif((origen_convert == "wma") and (destino_convert == "mp3")):
                 print("wma a mp3")
-                convertidor.wma_mp3(file_name_)
+                convertidor.wma_mp3(file_name_,taskId)
             elif((origen_convert == "wma") and (destino_convert == "wav")):
                 print("wma a wav")
-                convertidor.WMA_WAV(file_name_)
+                convertidor.WMA_WAV(file_name_,taskId)
             elif((origen_convert == "mp3") and (destino_convert == "acc")):
                 print("mp3 a acc")
-                convertidor.mp3_acc(file_name_)
+                convertidor.mp3_acc(file_name_,taskId)
             elif((origen_convert == "mp3") and (destino_convert == "ogg")):
                 print("mp3 a ogg")
-                convertidor.mp3_ogg(file_name_)
+                convertidor.mp3_ogg(file_name_,taskId)
             else:
                 print("no se puede convertir archivo")
 
-            url_back = 'http://{}/api/taskUpd/{}'.format(BACKEND_URL,taskId)
-            actualizar = requests.put(url_back)
-            if(actualizar.status_code == 200):
-                return {'status': 'ok'}, 200
-            else:
-                return {'status': 'error'}, 400
+            # url_back = 'http://{}/api/taskUpd/{}'.format(BACKEND_URL,taskId)
+            # actualizar = requests.put(url_back)
+            # if(actualizar.status_code == 200):
+            #     return {'status': 'ok'}, 200
+            # else:
+            #     return {'status': 'error'}, 400
+            
+            return {'status': 'ok'}, 200

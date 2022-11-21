@@ -8,6 +8,7 @@ from google.oauth2 import service_account
 import json
 import requests
 from urllib.request import urlopen
+import time
 
 import random
 url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
@@ -46,6 +47,7 @@ class MBucketPOST(Resource):
             url_back = 'http://{}/api/taskUpdSt/{}'.format(BACKEND_URI,id_task)
             actualizar = requests.put(url_back, json={"status":"En Proceso"})
             print('TASK UPDATED')
+            time.sleep(4)
             return {'status': 'ok'}, 200
 
 class ManageBucketUP(Resource):
@@ -53,15 +55,18 @@ class ManageBucketUP(Resource):
         # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
         bucket = storage_client.get_bucket(bucket_name)
         file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
-        blob = bucket.blob("upfiles/"+file_name)
-        blob.download_to_filename(file_path)
-        print('FILE DOWNLOADED')
         if os.path.exists(file_path):
             return send_file(file_path, attachment_filename = file_name)
         else:
-            return {'status': 'error'}, 404
-class ManageBucketPO(Resource):
-    def post(self, file_name):
+            blob = bucket.blob("upfiles/"+file_name)
+            blob.download_to_filename(file_path)
+            print('FILE DOWNLOADED')
+            if os.path.exists(file_path):
+                return send_file(file_path, attachment_filename = file_name)
+            else:
+                return {'status': 'error'}, 404
+class ManageBucketPOST2_(Resource):
+    def post(self, file_name,id_task):
         # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
         #GUARDAR ARCHIVO LOCALMENTE
         file = request.files['file']
@@ -71,17 +76,25 @@ class ManageBucketPO(Resource):
         blob = bucket.blob("pofiles/"+file_name)
         blob.upload_from_filename(file_path)
         print('FILE UPLOADED')
+        url_back = 'http://{}/api/taskUpd/{}'.format(BACKEND_URI,id_task)
+        actualizar = requests.put(url_back)
+        time.sleep(4)
         return {'status': 'ok'}, 200
 
+
+class ManageBucketPO(Resource):
     def get(self, file_name):
         # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
         bucket = storage_client.get_bucket(bucket_name)
         file_path = os.path.join(PROCESS_DIRECTORY, file_name)
-        blob = bucket.blob("pofiles/"+file_name)
-        blob.download_to_filename(file_path)
-        print('FILE DOWNLOADED')
         if os.path.exists(file_path):
             return send_file(file_path, attachment_filename = file_name)
         else:
-            return {'status': 'error'}, 404
+            blob = bucket.blob("pofiles/"+file_name)
+            blob.download_to_filename(file_path)
+            print('FILE DOWNLOADED')
+            if os.path.exists(file_path):
+                return send_file(file_path, attachment_filename = file_name)
+            else:
+                return {'status': 'error'}, 404
 
