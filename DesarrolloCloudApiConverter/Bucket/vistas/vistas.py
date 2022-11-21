@@ -6,6 +6,17 @@ from google.cloud import storage
 from lib2to3.pytree import convert
 from google.oauth2 import service_account
 import json
+import requests
+from urllib.request import urlopen
+
+import random
+url = "https://storage.googleapis.com/bucket_music_file_storage_1/enviroments.json?rand_v="+str(random.randint(1,10000000))
+response = urlopen(url)
+data = json.loads(response.read())
+
+BACKEND_URI = data['BACKEND_URL']
+print(url,flush=True)
+print(BACKEND_URI,flush=True)
 
 project_id = "misonube2022equipo23"
 UPLOAD_DIRECTORY = "./vistas/upfiles/"
@@ -21,19 +32,23 @@ class statusCheck(Resource):
     def get(self):
         return {'status': 'ok'}, 200
 
-class ManageBucketUP(Resource):
-    def post(self, file_name):
-        # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
-        #GUARDAR ARCHIVO LOCALMENTE
-        file = request.files['file']
-        file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
-        file.save(file_path)
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob("upfiles/"+file_name)
-        blob.upload_from_filename(file_path)
-        print('FILE UPLOADED')
-        return {'status': 'ok'}, 200
+class MBucketPOST(Resource):
+    def post(self, file_name, id_task):
+            # response = post('/docs/requirementABC', 'requirements.txt', bucket_name)
+            #GUARDAR ARCHIVO LOCALMENTE
+            file = request.files['file']
+            file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
+            file.save(file_path)
+            bucket = storage_client.get_bucket(bucket_name)
+            blob = bucket.blob("upfiles/"+file_name)
+            blob.upload_from_filename(file_path)
+            print('FILE UPLOADED')
+            url_back = 'http://{}/api/taskUpdSt/{}'.format(BACKEND_URI,id_task)
+            actualizar = requests.put(url_back, json={"status":"En Proceso"})
+            print('TASK UPDATED')
+            return {'status': 'ok'}, 200
 
+class ManageBucketUP(Resource):
     def get(self, file_name):
         # get('Voice List', r'H:\PythonVenv\GoogleAI\Cloud Storage\Voice List.csv', bucket_name)
         bucket = storage_client.get_bucket(bucket_name)

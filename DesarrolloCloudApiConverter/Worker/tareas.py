@@ -11,10 +11,13 @@ response = urlopen(url)
 data = json.loads(response.read())
 
 CONVERTER_URI = data['CONVERTER_URL']
+BACKEND_URI = data['BACKEND_URL']
 REDIS_URI = data['REDIS_URL']
 print(url,flush=True)
 print(CONVERTER_URI,flush=True)
+print(BACKEND_URI,flush=True)
 print(REDIS_URI,flush=True)
+
 
 celery = Celery(__name__, broker='redis://{}/0'.format(REDIS_URI))
 
@@ -32,11 +35,21 @@ def escribir_cola(data):
     #     file.write('{}\n'.format(data))
 
     try:
-        rslt = requests.get('http://{}/api/status'.format(CONVERTER_URI))
-        #print(rslt)
-        if rslt.status_code == 200:
-            requests.post('http://{}/api/convertidor'.format(CONVERTER_URI), json=data)
+        task_info = requests.get('http://{}/api/task/{}'.format(BACKEND_URI,data["id_task"])).json()
+        if task_info["status"] == "Pendiente":
+            #print("PENDING")
+            sleep(1)
+            reintegrar_cola(data)
+        elif task_info["status"] == "En Proceso":
+            rslt = requests.get('http://{}/api/status'.format(CONVERTER_URI))
+            #print(rslt)
+            if rslt.status_code == 200:
+                requests.post('http://{}/api/convertidor'.format(CONVERTER_URI), json=data)
+            else:
+                reintegrar_cola(data)
         else:
+            print("ERROR")
+            sleep(1)
             reintegrar_cola(data)
     except requests.exceptions.ConnectionError as r:
         r.status_code = "Connection refused"

@@ -34,7 +34,7 @@ def get_callback(
     return callback
 
 class publicador():
-    def publish_sms(data: str) -> None:
+    def publish_sms(self, data):
         js_str = json.dumps(data).encode("utf-8")
         print(js_str)
         # When you publish a message, the client returns a future.

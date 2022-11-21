@@ -112,17 +112,20 @@ class VistaTask(Resource):
             filename = os.path.join(UPLOAD_DIRECTORY, file_name)
             file.save(filename)
 
-            url_bucket = 'http://{}/api/BucketUp/{}'.format(BUCKET_URL,file_name)
+            
+            #GUARDAR ARCHIVO
+            print(filename,flush=True)
+            print(dataBudy,flush=True)
+            task = requests.post(url_back, json=dataBudy)
+            print(task.json(),flush=True)
+
+            url_bucket = 'http://{}/api/BucketUp/{}/{}'.format(BUCKET_URL,file_name,task.json()['id_task'])
+            print(url_bucket,flush=True)
             file = {'file': open(filename, 'rb')}
             bucket = requests.post(url_bucket, files=file)
-            print(bucket.json())
-            #GUARDAR ARCHIVO
-            print(filename)
-            print(dataBudy)
-            task = requests.post(url_back, json=dataBudy)
-            return task.json(), 200
+            print(bucket.json(),flush=True)
 
-            #return {'status': 'ok'}, 200
+            return task.json(), 200
         except ConnectionError as e:
             return {'error': 'Apic_c task post offline -- Connection'}, 404
         except requests.exceptions.Timeout:

@@ -124,7 +124,7 @@ class VistaTask(Resource):
             new_format = request.json['newFormat']
 
             timestamp = datetime.timestamp(datetime.now())
-            status = 'upLoaded'
+            status = 'Pendiente'
 
             usuario = Usuario.query.get_or_404(id_task)
             task = Task(time_stamp = timestamp, 
@@ -139,7 +139,9 @@ class VistaTask(Resource):
             data = {'file_name' : file_name, 
                     'new_format' : new_format, 
                     'id_task': task.id}
-            publicador().publish_sms(data)
+                    
+            publicador_ = publicador()                    
+            publicador_.publish_sms(data)
             #args = (data,)
             #print(args)
             #escribir_cola.apply_async(args = args)
@@ -224,6 +226,29 @@ class VistaTask(Resource):
         except Exception as e:
             return {'error': 'Backend deleteTask - Error desconocido -' + str(e)}, 404 
 
+class VistaTsk(Resource):
+    def put(self, id_task):
+        try:
+            task = Task.query.get_or_404(id_task)
+            if task is not None:
+                status = request.json['status']
+                task.status = status
+                db.session.commit()
+                return task_schema.dump(task)     
+            return 'La tarea a actualizar no se encontro' , 404
+        except ConnectionError as e:
+            return {'error': 'Backend putTask offline -- Connection'}, 404
+        except requests.exceptions.Timeout:
+            # Maybe set up for a retry, or continue in a retry loop
+            return {'error': 'Backend putTask offline -- Timeout'}, 404
+        except requests.exceptions.TooManyRedirects:
+            # Tell the user their URL was bad and try a different one
+            return {'error': 'Backend putTask offline -- ManyRedirects'}, 404
+        except requests.exceptions.RequestException as e:
+            # catastrophic error. bail.
+            return {'error': 'Backend putTask offline -- Request'}, 404
+        except Exception as e:
+            return {'error': 'Backend putTask - Error desconocido -' + str(e)}, 404
 
 class VistaFiles(Resource):
     def get(self, file_name):
