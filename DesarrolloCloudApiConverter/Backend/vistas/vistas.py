@@ -11,6 +11,7 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,TaskSche
 from redis import Redis
 from rq import Queue
 from pathlib import Path
+from dt_publisher import publish_sms
 import smtplib, ssl
 import json
 #from decouple import config
@@ -94,7 +95,8 @@ class VistaLogIn(Resource):
         return '', 204
 
 class VistaTasks(Resource):
-     def get(self):
+    #@jwt_required()
+    def get(self):
         try:
             definitionTask = DefinitionTask.query.all()
             if len(definitionTask) > 0 :
@@ -115,8 +117,8 @@ class VistaTasks(Resource):
             return {'error': 'Backend getTask - Error desconocido -' + str(e)}, 404
 
 class VistaTask(Resource):
+    #@jwt_required()
     def post(self, id_task):
-        #@jwt_required()
         try:
             file_name = request.json['fileName']
             new_format = request.json['newFormat']
@@ -137,9 +139,10 @@ class VistaTask(Resource):
             data = {'file_name' : file_name, 
                     'new_format' : new_format, 
                     'id_task': task.id}
-            args = (data,)
-            print(args)
-            escribir_cola.apply_async(args = args)
+            publish_sms(data)
+            #args = (data,)
+            #print(args)
+            #escribir_cola.apply_async(args = args)
             return {'status': 'Tarea encolada correctamente', 'id_task': task.id }, 200
         except ConnectionError as e:
             return {'error': 'Backend postTask offline -- Connection'}, 404
@@ -155,8 +158,8 @@ class VistaTask(Resource):
         except Exception as e:
             return {'error': 'Backend postTask - Error desconocido -' + str(e)}, 404 
     
+    #@jwt_required()
     def get(self, id_task):
-        #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
             if task is not None:
@@ -177,7 +180,6 @@ class VistaTask(Resource):
             return {'error': 'Backend getTask - Error desconocido -' + str(e)}, 404 
     
     def put(self, id_task):
-         #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
             if task is not None:
@@ -201,7 +203,6 @@ class VistaTask(Resource):
             return {'error': 'Backend putTask - Error desconocido -' + str(e)}, 404
 
     def delete(self, id_task):
-         #@jwt_required()
         try:
             task = Task.query.get_or_404(id_task)
             if task is not None :
@@ -222,6 +223,7 @@ class VistaTask(Resource):
             return {'error': 'Backend deleteTask offline -- Request'}, 404
         except Exception as e:
             return {'error': 'Backend deleteTask - Error desconocido -' + str(e)}, 404 
+
 
 class VistaFiles(Resource):
     def get(self, file_name):
