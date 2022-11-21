@@ -11,7 +11,7 @@ from modelos.modelos import (DefinitionTask, DefinitionTaskSchema, Task,TaskSche
 from redis import Redis
 from rq import Queue
 from pathlib import Path
-from dt_publisher import publish_sms
+from vistas.dt_publisher import publicador
 import smtplib, ssl
 import json
 #from decouple import config
@@ -139,7 +139,7 @@ class VistaTask(Resource):
             data = {'file_name' : file_name, 
                     'new_format' : new_format, 
                     'id_task': task.id}
-            publish_sms(data)
+            publicador().publish_sms(data)
             #args = (data,)
             #print(args)
             #escribir_cola.apply_async(args = args)

@@ -7,7 +7,7 @@ from concurrent import futures
 
 project_id = "misonube2022equipo23"
 topic_id = "tropico"
-with open('dt_creds.json') as source:
+with open('./vistas/dt_creds.json') as source:
     info = json.load(source)
 
 dt_credentials = service_account.Credentials.from_service_account_info(info)
@@ -33,13 +33,14 @@ def get_callback(
 
     return callback
 
-def publish_sms(data: str) -> None:
-    js_str = json.dumps(data).encode("utf-8")
-    print(js_str)
-    # When you publish a message, the client returns a future.
-    publish_future = publisher.publish(topic_path, js_str)
-    # Non-blocking. Publish failures are handled in the callback function.
-    publish_future.add_done_callback(get_callback(publish_future, data))
-    publish_futures.append(publish_future)
-    futures.wait(publish_futures, return_when=futures.ALL_COMPLETED)
-    print("All messages published.")
+class publicador():
+    def publish_sms(data: str) -> None:
+        js_str = json.dumps(data).encode("utf-8")
+        print(js_str)
+        # When you publish a message, the client returns a future.
+        publish_future = publisher.publish(topic_path, js_str)
+        # Non-blocking. Publish failures are handled in the callback function.
+        publish_future.add_done_callback(get_callback(publish_future, data))
+        publish_futures.append(publish_future)
+        futures.wait(publish_futures, return_when=futures.ALL_COMPLETED)
+        print("All messages published.")
