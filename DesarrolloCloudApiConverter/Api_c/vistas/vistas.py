@@ -35,9 +35,9 @@ PROCESS_DIRECTORY = "./vistas/pofiles/"
 
 def set_file_bkt(file, file_path, file_name, id_task):
     url_bucket = 'http://{}/api/BucketUp/{}/{}'.format(BUCKET_URL,file_name,id_task)
-    print(url_bucket,flush=True)
-    print(file_path,flush=True)
-    print(str(id_task),flush=True)
+    # print(url_bucket,flush=True)
+    # print(file_path,flush=True)
+    # print(str(id_task),flush=True)
     file = {'file': open(file_path, 'rb')}
     bucket = requests.post(url_bucket, files=file)
     print(bucket.json(),flush=True)
@@ -100,6 +100,7 @@ class VistaLogIn(Resource):
             return {'error': 'Api_c Login - Error desconocido -' + str(e)}, 404
 
 class VistaTasks(Resource):
+    #@jwt_required()
     def get(self):
         try:
             url_back = 'http://{}/api/tasks'.format(BACKEND_URL)
@@ -120,6 +121,7 @@ class VistaTasks(Resource):
             return {'error': 'Api_c getTask - Error desconocido -' + str(e)}, 404
     
 class VistaTask(Resource):
+    #@jwt_required()    
     def post(self, id_task):
         try:
             rqt = json.loads(request.form['request_'])
@@ -131,12 +133,9 @@ class VistaTask(Resource):
             file_name = file.filename
             file_path = os.path.join(UPLOAD_DIRECTORY, file_name)
             file.save(file_path)
-
-            
-            
             #GUARDAR ARCHIVO
-            print(file_path,flush=True)
-            print(dataBudy,flush=True)
+            # print(file_path,flush=True)
+            # print(dataBudy,flush=True)
             task = requests.post(url_back, json=dataBudy)
             print(task.json(),flush=True)
             taskid = task.json()['id_task']
@@ -158,7 +157,7 @@ class VistaTask(Resource):
         except Exception as e:
             return {'error': 'Apic_c task post - Error desconocido -' + str(e)}, 404
     
-    
+    #@jwt_required()
     def get(self, id_task):
         try:
             url_back = 'http://{}/api/task/{}'.format(BACKEND_URL, id_task)
@@ -177,7 +176,7 @@ class VistaTask(Resource):
             return {'error': 'Api_c getTask offline -- Request'}, 404
         except Exception as e:
             return {'error': 'Api_c getTask - Error desconocido -' + str(e)}, 404
-    
+    #@jwt_required()
     def put(self, id_task):
         try:
             url_back = 'http://{}/api/task/{}'.format(BACKEND_URL, id_task)
@@ -197,7 +196,7 @@ class VistaTask(Resource):
             return {'error': 'Apic_c putTask offline -- Request'}, 404
         except Exception as e:
             return {'error': 'Apic_c putTask - Error desconocido -' + str(e)}, 404
-
+    #@jwt_required()
     def delete(self, id_task):
         try:
             url_back = 'http://{}/api/task/{}'.format(BACKEND_URL,id_task)
@@ -218,6 +217,7 @@ class VistaTask(Resource):
             return {'error': 'Apic_c deleteTask - Error desconocido -' + str(e)}, 404
 
 class VistaFiles(Resource):
+    #@jwt_required()
     def get(self, file_name, nfile_name):
         try:
             url_back = 'http://{}/api/files/{}'.format(BACKEND_URL, file_name)

@@ -1,10 +1,10 @@
 {
-    "BACKEND_URL":"host.docker.internal:5000",
-    "API_URL":"host.docker.internal:5001",
-    "CONVERTER_URL":"host.docker.internal:5002",
-    "WORKER_URL":"host.docker.internal:5003",
-    "REDIS_URL":"host.docker.internal:6379",
-    "MAIL_URL":"host.docker.internal:5004",
-    "BUCKET_URL":"host.docker.internal:5005",
-    "DATABASE_URL":"postgresql://postgres:DreamTeam123*@35.224.243.237:5432/postgres"
+    "BACKEND_URL":"34.28.201.26:5000",
+    "API_URL":"34.72.7.46:5001",
+    "CONVERTER_URL":"34.66.127.206:5002",
+    "WORKER_URL":"35.194.14.254:5003",
+    "REDIS_URL":"35.222.19.159:6379",
+    "MAIL_URL":"35.223.153.75:5004",
+    "BUCKET_URL":"35.223.153.75:5005",
+    "DATABASE_URL":"postgresql://postgres:DreamTeam123*@10.25.224.4:5432/postgres"
 }

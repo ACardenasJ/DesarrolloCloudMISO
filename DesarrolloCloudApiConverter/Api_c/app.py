@@ -5,6 +5,7 @@ from vistas.vistas import VistaSingUp, VistaLogIn, VistaTask, VistaFiles, status
 
 from flask import Flask
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 import os
 
 # UPLOAD_DIRECTORY = "/usr/src/app/upfiles"
@@ -15,6 +16,7 @@ import os
 def create_app(config_name):
     app = Flask(__name__)
     #app.config['UPLOAD_FOLDER'] = UPLOAD_DIRECTORY
+    app.config['JWT_SECRET_KEY'] = 'frase-secreta'
     CORS(app)
     return app
 
@@ -30,6 +32,8 @@ api.add_resource(VistaLogIn, '/api/auth/login')
 api.add_resource(VistaTasks, '/api/tasks')
 api.add_resource(VistaTask, '/api/task/<int:id_task>')
 api.add_resource(VistaFiles, '/api/files/<string:file_name>/<string:nfile_name>')
+
+jwt = JWTManager(app)
 
 print(' * API corriendo ----------------')
 

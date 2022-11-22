@@ -38,7 +38,7 @@ def escribir_cola(data):
         task_info = requests.get('http://{}/api/task/{}'.format(BACKEND_URI,data["id_task"])).json()
         if task_info["status"] == "Pendiente":
             #print("PENDING")
-            sleep(1)
+            #sleep(1)
             reintegrar_cola(data)
         elif task_info["status"] == "En Proceso":
             rslt = requests.get('http://{}/api/status'.format(CONVERTER_URI))

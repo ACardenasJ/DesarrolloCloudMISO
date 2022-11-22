@@ -47,7 +47,7 @@ class MBucketPOST(Resource):
             url_back = 'http://{}/api/taskUpdSt/{}'.format(BACKEND_URI,id_task)
             actualizar = requests.put(url_back, json={"status":"En Proceso"})
             print('TASK UPDATED')
-            time.sleep(4)
+            time.sleep(3)
             return {'status': 'ok'}, 200
 
 class ManageBucketUP(Resource):
@@ -78,7 +78,7 @@ class ManageBucketPOST2_(Resource):
         print('FILE UPLOADED')
         url_back = 'http://{}/api/taskUpd/{}'.format(BACKEND_URI,id_task)
         actualizar = requests.put(url_back)
-        time.sleep(4)
+        time.sleep(3)
         return {'status': 'ok'}, 200
 
 
