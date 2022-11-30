@@ -8,15 +8,15 @@ Aqui se desarrollara todo lo que es Desarrollo Cloud
 
 ## Instrucciones - Entorno Virtual Local
 
-Crear Entorno
-python3 -m venv venv
-Activar Entorno
-source venv/bin/activate
-Desactivar Entorno
-deactivate
+* Crear Entorno
+> python3 -m venv venv  
+* Activar Entorno  
+> source venv/bin/activate
+* Desactivar Entorno  
+> deactivate
 
-Instala requerimientos generales
-pip3 install -r requirements.txt 
+Instala requerimientos generales  
+* pip3 install -r requirements.txt 
 
 Probar
 api --> puerto 5001
@@ -88,3 +88,9 @@ volumen compartido entre dockers: cd /usr/src/app/upfiles
 ## Convertir archivos
 ffmpeg -i /usr/src/app/upfiles/basto.mp3 /usr/src/app/pofiles/basto.wma
 ffmpeg -i basto.mp3 basto.wma
+
+
+## DESPLEGAR EN GOOGLE APP ENGINE
+
+gcloud app deploy  
+gcloud app logs tail -s default  

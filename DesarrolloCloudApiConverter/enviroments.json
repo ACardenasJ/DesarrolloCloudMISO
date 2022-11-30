@@ -1,8 +1,8 @@
 {
-    "BACKEND_URL":"34.28.201.26:5000",
-    "API_URL":"34.72.7.46:5001",
-    "CONVERTER_URL":"34.66.127.206:5002",
-    "WORKER_URL":"35.194.14.254:5003",
+    "BACKEND_URL":"backend-service-dot-misonube2022equipo23.ew.r.appspot.com",
+    "API_URL":"api-service-dot-misonube2022equipo23.ew.r.appspot.com",
+    "CONVERTER_URL":"34.83.211.20:5002",
+    "WORKER_URL":"35.247.81.228:5003",
     "REDIS_URL":"35.222.19.159:6379",
     "MAIL_URL":"35.223.153.75:5004",
     "BUCKET_URL":"35.223.153.75:5005",

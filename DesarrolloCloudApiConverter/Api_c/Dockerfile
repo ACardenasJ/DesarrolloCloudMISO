@@ -8,11 +8,11 @@ ENV FLASK_RUN_HOST 0.0.0.0
 ENV PYTHONPATH "${PYTHONPATH}:/app_api"
 ENV PYTHONUNBUFFERED 1
 
-EXPOSE 5001
+EXPOSE 8080
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "flask", "run","-p","5001"]
+CMD ["gunicorn", "app:app", "-b", ":8080", "--timeout", "300"]

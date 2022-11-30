@@ -16,6 +16,8 @@ data = json.loads(response.read())
 
 app = Flask(__name__)
 DATABASE_URI = data['DATABASE_URL']
+
+#DATABASE_URI = 'postgresql://postgres:DreamTeam123*@35.224.243.237:5432/postgres'
 print(url,flush=True)
 print(DATABASE_URI,flush=True)
 
@@ -52,4 +54,7 @@ jwt = JWTManager(app)
 print(' * BACKEND corriendo ----------------')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000,debug=True)
+    #app.run(host="0.0.0.0", port=5000,debug=True)
+    HOST = '0.0.0.0'
+    PORT = 8080
+    app.run(HOST, PORT, debug=True) 

@@ -39,4 +39,7 @@ print(' * API corriendo ----------------')
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001,debug=True)
+    #app.run(host="0.0.0.0", port=5001,debug=True)
+    HOST = '0.0.0.0'
+    PORT = 8080
+    app.run(HOST, PORT, debug=True) 
