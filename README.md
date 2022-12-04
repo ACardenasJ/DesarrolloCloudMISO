@@ -93,4 +93,4 @@ ffmpeg -i basto.mp3 basto.wma
 ## DESPLEGAR EN GOOGLE APP ENGINE
 
 gcloud app deploy  
-gcloud app logs tail -s default  
+gcloud app logs tail -s [nombre del servicio]

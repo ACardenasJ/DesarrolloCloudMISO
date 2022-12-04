@@ -3,8 +3,8 @@
     "API_URL":"api-service-dot-misonube2022equipo23.ew.r.appspot.com",
     "CONVERTER_URL":"34.83.211.20:5002",
     "WORKER_URL":"worker-service-dot-misonube2022equipo23.ew.r.appspot.com",
-    "REDIS_URL":"35.225.247.128:6379",
-    "MAIL_URL":"34.122.229.127:5004",
-    "BUCKET_URL":"34.122.229.127:5005",
+    "REDIS_URL":"34.132.175.232:6379",
+    "MAIL_URL":"34.123.15.7:5004",
+    "BUCKET_URL":"34.123.15.7:5005",
     "DATABASE_URL":"postgresql://postgres:DreamTeam123*@10.25.224.4:5432/postgres"
 }
